@@ -1,0 +1,235 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="SuperCaissiere.Engine.Core.Application">
+    <Position X="13" Y="10.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AARAAgAAAAgAAgAEAIAAAAAADgQAAAUSRAACIAAEAAw=</HashCode>
+      <FileName>Core\Application.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="SpriteBatch" />
+      <Property Name="InputManager" />
+      <Property Name="GameStateManager" />
+      <Property Name="MagicContentManager" />
+      <Property Name="ScriptManager" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SuperCaissiere.Engine.Core.GameState">
+    <Position X="15.5" Y="5.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAREgAAAIAAAIgAAEAAAAAAAAAAAAAQAAABAAAAAAAQ=</HashCode>
+      <FileName>Core\GameState.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="SceneCamera" />
+      <Property Name="ParticuleManager" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SuperCaissiere.Engine.Core.GameStateManager" BaseTypeListCollapsed="true">
+    <Position X="12.25" Y="6.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAABAAAAwQAAAQCAAIAAAAAAAAAAAAQQAAAAAg=</HashCode>
+      <FileName>Core\GameStateManager.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="CurrentGameState" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Field Name="_gameStates" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SuperCaissiere.Engine.Core.Camera">
+    <Position X="12" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAIAARIA4EQAAgAAAAAAAAgAAAEAAgEAAAAA=</HashCode>
+      <FileName>Graphics\Camera.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SuperCaissiere.Engine.Core.Resolution" Collapsed="true">
+    <Position X="28.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgCAAAEAAAEAQAAAgAAEACACAgQAAGCAICAAAAACAA=</HashCode>
+      <FileName>Graphics\Resolution.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Lapins.PointExtension" Collapsed="true">
+    <Position X="24.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Extensions\Point.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Lapins.RectangleExtension" Collapsed="true">
+    <Position X="26.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>Extensions\Rectangle.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Lapins.Vector2Extension" Collapsed="true">
+    <Position X="24.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Extensions\Vector2.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SuperCaissiere.Engine.Graphics.SpriteBatchProxy">
+    <Position X="15.75" Y="16.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAQgBAAAgAAAAAAAAAAAAAAEAAAAIAAAAIAAAA=</HashCode>
+      <FileName>Graphics\SpriteBatchProxy.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SuperCaissiere.Engine.Input.InputManager" BaseTypeListCollapsed="true">
+    <Position X="7.25" Y="3.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AQQBAAAECwAGBgAA4R0AAAABIUIQAAAAAKAAEkIkAAE=</HashCode>
+      <FileName>Input\InputManager.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SuperCaissiere.Engine.Input.KeyboardInputState" Collapsed="true">
+    <Position X="24.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIQBAhUAAEAgIAAACAAACYQAAAARQEAYAAAESAAAABA=</HashCode>
+      <FileName>Input\KeyboardInputState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SuperCaissiere.Engine.Input.KeyState" Collapsed="true">
+    <Position X="26.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AYKq439VQcAoSowIGxETQCoVGi1VVBsKyAGg/v//YUM=</HashCode>
+      <FileName>Input\KeyState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SuperCaissiere.Engine.Input.MouseInputState" Collapsed="true">
+    <Position X="28.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAACIAByACIAAAhAACAAAAAAAAQgAgAAAAAAAYAA=</HashCode>
+      <FileName>Input\MouseInputState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SuperCaissiere.Engine.Particules.Particule">
+    <Position X="22.25" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQQAAABQAAAEAgAAAAKAAAFCAAIAAgCAAAAQAAAAAAA=</HashCode>
+      <FileName>Particules\Particule.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SuperCaissiere.Engine.Particules.ParticuleManager">
+    <Position X="19" Y="5.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAwAAAAAEAAAAQAAAAAAAAAACAAAAAAA=</HashCode>
+      <FileName>Particules\ParticuleManager.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="_particules" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SuperCaissiere.Engine.Content.MagicContentManager">
+    <Position X="16.5" Y="10.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAQABAACDAAEAwAAAAAAAAACAAAACAAgACQAAAACAAA=</HashCode>
+      <FileName>Content\MagicContentManager.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SuperCaissiere.Engine.Script.ScriptManager">
+    <Position X="10.75" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAQACAAAAAAAAAAAAAAAAAAAAABAAACA=</HashCode>
+      <FileName>Script\ScriptManager.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="_commands" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SuperCaissiere.Engine.Script.Command">
+    <Position X="11" Y="16.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAEAAAAAAAAAAAAABAAAAAAAAAA=</HashCode>
+      <FileName>Script\Command.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SuperCaissiere.Engine.World.Entity">
+    <Position X="4.5" Y="7.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>gQRABAAAABAQi4AEgQKkAIECAAAEAEAAAAAChAAAABA=</HashCode>
+      <FileName>World\Entity.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Animation" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SuperCaissiere.Engine.World.MovingEntity">
+    <Position X="2.75" Y="16.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIQAAAgAAAAAAAAAAAAAAAAAAQAAAQAAAAQAIAAAAAA=</HashCode>
+      <FileName>World\MovingEntity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SuperCaissiere.Engine.World.Grid">
+    <Position X="7.75" Y="15.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>ARQAAAAAAAAAggEAA4AAAIAAAAAAAAAAAAAAAAAAABg=</HashCode>
+      <FileName>World\Grid.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="_grid" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="SuperCaissiere.Engine.World.Tile">
+    <Position X="5" Y="16.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAAAAAAAAAAAAgAAAAAAAEAAAAAAAAAAAAABA=</HashCode>
+      <FileName>World\Tile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SuperCaissiere.Engine.World.SpriteAnimation">
+    <Position X="0.5" Y="9.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AASBiAAAgAQABAAECAIAAAQEgAAAgAAAAAAAAAAAAAg=</HashCode>
+      <FileName>World\SpriteAnimation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="SuperCaissiere.Engine.Input.Button" Collapsed="true">
+    <Position X="24.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAABAAAAAAAAGAAAAAAAABAAAAEUAAIAAEAAAAAAQg=</HashCode>
+      <FileName>Input\Button.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="SuperCaissiere.Engine.Input.KeyboardMouseMap" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="26.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAIBAAAAQECAGBAAAAAAAAAQAAAAAAAAAEAAA=</HashCode>
+      <FileName>Input\KeyboardMouseMap.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Struct>
+  <Struct Name="SuperCaissiere.Engine.Input.KeyMap" Collapsed="true">
+    <Position X="28.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAD8AwA=</HashCode>
+      <FileName>Input\KeyMap.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Interface Name="SuperCaissiere.Engine.Core.Manager" Collapsed="true">
+    <Position X="24.75" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\Manager.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="SuperCaissiere.Engine.Input.MouseInput" Collapsed="true">
+    <Position X="24.75" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gIAAAACBABAACAAAABAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Input\MouseInput.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
