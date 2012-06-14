@@ -72,9 +72,14 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\Cashier.cs" />
+    <Compile Include="Entities\Hand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="SCGame.cs" />
+    <Compile Include="States\IngameState.cs" />
+    <Compile Include="States\HomeState.cs" />
+    <Compile Include="States\SplashscreenState.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

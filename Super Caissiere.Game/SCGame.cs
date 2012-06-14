@@ -1,56 +1,57 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Reflection;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
+using Super_Caissiere.States;
+using SuperCaissiere.Engine.Content;
+using SuperCaissiere.Engine.Core;
 
 namespace Super_Caissiere
 {
-    public class SCGame : Microsoft.Xna.Framework.Game
+    [TextureContent(AssetName = "null", AssetPath = "gfxs/misc/1x1", LoadOnStartup = true)]
+    [FontContent(AssetName = "font", AssetPath = "fonts/spriteFont", IsDefaultFont = true)]
+    public class SCGame : Application
     {
-        private GraphicsDeviceManager graphics;
-        private SpriteBatch spriteBatch;
-
         public SCGame()
-        {
-            graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
-        }
+            : base("Super Caissière !", "Content", "1.0")
+        { }
 
         protected override void Initialize()
         {
             base.Initialize();
-        }
 
-        protected override void LoadContent()
-        {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-        }
+            // Game states
+            GameStateManager.RegisterGameState(new SplashscreenState());
+            GameStateManager.RegisterGameState(new HomeState());
+            GameStateManager.RegisterGameState(new IngameState());
 
-        protected override void UnloadContent()
-        {
-        }
-
-        protected override void Update(GameTime gameTime)
-        {
-            // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                this.Exit();
-
-            base.Update(gameTime);
+            // Load the first scene
+            GameStateManager.LoadGameState(GameStateManager.GetGameState<SplashscreenState>());
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-
             base.Draw(gameTime);
+
+#if DEBUG
+            SpriteBatch.BeginNoCamera();
+            Application.FpsCounter.Draw(SpriteBatch, new Vector2(GameResolutionWidth - 100, GameResolutionHeight - 30));
+            SpriteBatch.End();
+#endif
+        }
+
+        protected override int GameResolutionWidth { get { return 800; } }
+
+        protected override int GameResolutionHeight { get { return 600; } }
+
+        protected override int ScreenResolutionWidth { get { return 800; } }
+
+        protected override int ScreenResolutionHeight { get { return 600; } }
+
+        protected override bool IsFullscreen { get { return false; } }
+
+        protected override System.Reflection.Assembly[] GameAssemblies
+        {
+            get { return new Assembly[] { GetType().Assembly}; }
         }
     }
 }
