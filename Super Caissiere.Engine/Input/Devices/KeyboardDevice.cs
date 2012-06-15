@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Input;
 namespace SuperCaissiere.Engine.Input.Devices
 {
     /// <summary>
-    /// Keyboard mouse device with mapping
+    /// Keyboard device with mapping
     /// </summary>
     public class KeyboardDevice : Device
     {
@@ -26,7 +26,7 @@ namespace SuperCaissiere.Engine.Input.Devices
         private KeyboardState _keyboard, _pkeyboard;
 
         public KeyboardDevice(LogicalPlayerIndex logicalPlayerIndex)
-            : base(logicalPlayerIndex,DeviceType.KeyboardMouse, 0)
+            : base(logicalPlayerIndex,DeviceType.Keyboard, 0)
         {
             _keyboardMapping = new Dictionary<Keys, MappingButtons>();
         }

@@ -18,8 +18,6 @@ namespace SuperCaissiere.Engine.Input
 
         private Dictionary<int, JoystickState> _joyState;
         private Dictionary<int, JoystickState> _previousJoyState;
-
-        private MouseState _mouse, _pmouse;
         private List<Device> _registeredDevices;
 
         public InputManager()
@@ -39,7 +37,6 @@ namespace SuperCaissiere.Engine.Input
         public void Update(GameTime gameTime)
         {
 #if WINDOWS
-            _mouse = Mouse.GetState();
 
             // Joypads
             // TODO : Disable joypad scan due to performance issues
@@ -62,8 +59,6 @@ namespace SuperCaissiere.Engine.Input
             }
 
 #if WINDOWS
-            _pmouse = _mouse;
-
             _previousJoyState.Clear();
 
             foreach (int k in _joyState.Keys)
@@ -84,6 +79,19 @@ namespace SuperCaissiere.Engine.Input
             {
                 _registeredDevices.Remove(d);
             }
+        }
+
+        public T GetDevice<T>(LogicalPlayerIndex playerIndex) where T : Device
+        {
+            foreach (Device d in _registeredDevices)
+            {
+                if ((d.LogicalPlayerIndex == playerIndex) && (d is T))
+                {
+                    return (T)d;
+                }
+            }
+
+            return null;
         }
 
         /// <summary>

@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Super_Caissiere.States;
 using SuperCaissiere.Engine.Content;
 using SuperCaissiere.Engine.Core;
+using SuperCaissiere.Engine.Input.Devices;
 
 namespace Super_Caissiere
 {
@@ -23,6 +24,10 @@ namespace Super_Caissiere
             GameStateManager.RegisterGameState(new SplashscreenState());
             GameStateManager.RegisterGameState(new HomeState());
             GameStateManager.RegisterGameState(new IngameState());
+
+            // Register mouse
+            MouseDevice mouse = new MouseDevice(SuperCaissiere.Engine.Input.LogicalPlayerIndex.One);
+            Application.InputManager.RegisterDevice(mouse);
 
             // Load the first scene
             GameStateManager.LoadGameState(GameStateManager.GetGameState<SplashscreenState>());

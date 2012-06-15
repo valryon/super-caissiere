@@ -12,7 +12,8 @@ namespace SuperCaissiere.Engine.Input.Devices
     /// </summary>
     public enum DeviceType
     {
-        KeyboardMouse,
+        Mouse,
+        Keyboard,
         Gamepad, //x360 gamepad
         Joystick //PC Joystick/Joypad
     }

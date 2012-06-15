@@ -108,6 +108,7 @@
     <Compile Include="Graphics\SpriteBatchProxy.cs" />
     <Compile Include="Content\MagicContentManager.cs" />
     <Compile Include="Input\Buttons.cs" />
+    <Compile Include="Input\Devices\MouseDevice.cs" />
     <Compile Include="Input\Devices\Device.cs" />
     <Compile Include="Input\Devices\GamepadDevice.cs" />
     <Compile Include="Input\Devices\JoypadDevice.cs" />

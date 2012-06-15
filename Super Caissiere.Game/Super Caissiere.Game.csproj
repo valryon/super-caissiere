@@ -73,7 +73,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\Cashier.cs" />
+    <Compile Include="Entities\Client.cs" />
+    <Compile Include="Entities\ClientBasket.cs" />
     <Compile Include="Entities\Hand.cs" />
+    <Compile Include="Entities\Items\Cacolac.cs" />
+    <Compile Include="Entities\Items\Cassoulet.cs" />
+    <Compile Include="Entities\Items\ItemBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="SCGame.cs" />
