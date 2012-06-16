@@ -5,23 +5,27 @@ using Microsoft.Xna.Framework;
 using Super_Caissiere.Entities;
 using SuperCaissiere.Engine.Core;
 using Super_Caissiere.Entities.Items;
+using Microsoft.Xna.Framework.Input;
+using SuperCaissiere.Engine.Input.Devices;
+using SuperCaissiere.Engine.Utils;
 
 namespace Super_Caissiere.States
 {
     public class IngameState : GameState
     {
-        private Vector2 caisseStart = new Vector2(500, 460);
-        private const int spaceBetweenClient = 200;
 
         private Cashier m_cashier;
         private Hand m_hand;
-
-        private Queue<Client> m_clients;
-        private ItemBase m_currentItem;
-        private Client m_currentClient;
-        private ClientBasket m_basket;
-
-        private float m_cooldown;
+        private DateTime time;
+        private Queue<Client> liste_client;
+        private ItemBase produit_courant;
+        private bool boobool;
+        private bool boobool2;
+        private Rectangle scanner_zone;
+        private float scanner_color;
+        private Interpolator scanner_interpolator;
+        private ClientBasket panier;
+        
 
         protected override void LoadContent()
         {
@@ -31,145 +35,149 @@ namespace Super_Caissiere.States
         {
             m_cashier = new Cashier();
             m_hand = new Hand();
-            m_basket = new ClientBasket();
-
-            m_clients = new Queue<Client>();
-
-            m_cooldown = 150f;
+            liste_client = new Queue<Client>();
+            panier = new ClientBasket();
+            time = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 9, 0, 0);
         }
 
         public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
         {
-            // Mise à jour des éléments joueur
             m_cashier.Update(gameTime);
             m_hand.Update(gameTime);
-
-            // Client en cours existe ?
-            if (m_currentClient != null)
+            if (liste_client.FirstOrDefault() == null)
             {
-                m_currentClient.Update(gameTime);
+                liste_client.Enqueue(new Client(new Vector2(500, 170), new Vector2(500, 400)));
+
             }
-            else
+            foreach (Client cli in liste_client.ToList())
             {
-                // Le premier de la file devient le client en cours
-                m_currentClient = m_clients.FirstOrDefault();
-
-                // S'il y a avait un client on le fait passer devant
-                if (m_currentClient != null)
+                cli.Update(gameTime);
+                foreach (ItemBase produits in cli.Items.ToList())
                 {
-                    // TODO Animation
-                    m_currentClient.Location = new Vector2(40, 170);
-
-                    // TODO On décale tous les suivants
+                    produits.Update(gameTime);
                 }
             }
 
-            // On ajoute régulièrement des nouveaux clients
-            m_cooldown -= (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-            if (m_cooldown <= 0)
+            time = time.AddSeconds(gameTime.ElapsedGameTime.TotalSeconds);
+
+            //appuyer sur espace
+            var key = Application.InputManager.GetDevice<KeyboardDevice>(SuperCaissiere.Engine.Input.LogicalPlayerIndex.One);
+            if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed && boobool2==false)
             {
-                // Dans la limite des stocks disponibles
-                if (m_clients.Count < 3)
+                if (produit_courant == null)
                 {
-                    // On calcule la position au passage
-                    var client = new Client(new Vector2(300 + ((m_clients.Count) * 150), 170));
-                    m_clients.Enqueue(client);
-
-                    // On place les objets sur le taps
-                    int lastClientLastItem = (int)m_clients.Last().Items.Last().Location.X;
-
-                    for (int i = 0; i < client.Items.Count; i++)
+                    boobool = false;
+                    produit_courant = liste_client.First().Items.First();
+                    Timer.Create(0.02F, true, (t =>
                     {
-                        var item = client.Items[i];
-                        item.Location = caisseStart + new Vector2(lastClientLastItem + 50 * i, 0);
-                    }
-
-                    // On définit le temps avant le prochain client
-                    m_cooldown = Application.Random.GetRandomFloat(500, 3000);
+                        produit_courant.Location += new Vector2(-5, 0);
+                        if (produit_courant.Location.X < 300)
+                        {
+                            t.Stop();
+                        }
+                    }));
                 }
-            }
-
-            // Mise à jour des clients et de leurs objets
-            m_clients.ToList().ForEach(c =>
-            {
-                c.Update(gameTime);
-
-                c.Items.ForEach(i =>
+                else
                 {
-                    i.Update(gameTime);
-                });
-            });
-
-            // Y a-t-il un objet en train de voler
-            if (m_currentItem == null)
-            {
-                // Si non on essaye de récupérer le premier du tapis
-                var firstClient = m_clients.FirstOrDefault();
-                if (firstClient != null)
-                {
-                    m_currentItem = firstClient.Items.FirstOrDefault();
-
-                    if (m_currentItem == null)
+                    if (boobool == false)
                     {
-                        // TODO On a fini de scanner, il faut faire payer le client
+                        Timer.Create(0.02F, true, (t =>
+                        {
+                            foreach (ItemBase item in liste_client.First().Items)
+                            {
+                                if (item != produit_courant)
+                                {
+                                    item.Location += new Vector2(-5, 0);
+                                    if (item.Location.X < 450)
+                                    {
+                                        t.Stop();
+                                        boobool = true;
+                                    }
 
-                        // Client suivant
-                        m_clients.Dequeue();
-                        m_currentClient = null;
-
-                        m_basket.Clear();
+                                }
+                            }
+                        }));
                     }
                 }
             }
-            else
+
+            var mouse = Application.InputManager.GetDevice<MouseDevice>(SuperCaissiere.Engine.Input.LogicalPlayerIndex.One);
+            if (mouse.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed)
             {
-                // Si oui on le déplace jusqu'au panier
-                m_currentItem.Location += new Vector2(-5, 0);
+               
+                scanner_color = 1;
+                int larg = 50;
+                int haut = 100;
+                scanner_zone = new Rectangle(m_hand.DstRect.Left + larg, m_hand.DstRect.Top + haut, m_hand.DstRect.Width - (larg*2), m_hand.DstRect.Height - (haut*2));
+                if (produit_courant != null) { 
+                    if(scanner_zone.Intersects(produit_courant.DstRect)){
+                        boobool2 = true;
+                        Timer.Create(0.02F, true, (t =>
+                        {
+                            produit_courant.Location += new Vector2(-5, 0);
+                            if (produit_courant.Location.X < 100)
+                            {
+                                t.Stop();
+                                boobool2 = false;
+                                panier.AddItem(produit_courant);
+                                liste_client.First().Items.Dequeue();
+                                produit_courant = null;
 
-                Vector2 depth;
-                if (m_currentItem.Hitbox.Dimensions.GetIntersectionDepth(m_basket.Hitbox.Dimensions, out depth))
+                            }
+                        }));
+                    }
+                 }
+                // Timer.Create(0.02F, true, (t => {
+                if (scanner_interpolator != null)
                 {
-                    m_basket.AddItem(m_currentItem);
-                    m_currentClient.Items.Remove(m_currentItem);
-                    m_currentItem = null;
+                    scanner_interpolator.Stop();
+                    scanner_interpolator = null;
                 }
-            }
+                   scanner_interpolator= Interpolator.Create(1.0F, 0F, 0.35F, (i => {
+                        scanner_color = i.Value;
+                    }), (i => {
+                        scanner_zone = Rectangle.Empty;
+                    }));
+              //  }));
 
+            }
+            panier.Update(gameTime);
             base.Update(gameTime);
         }
 
         public override void Draw(SuperCaissiere.Engine.Graphics.SpriteBatchProxy spriteBatch)
         {
             spriteBatch.Begin(SceneCamera);
-
-            // Les clients
-            m_clients.ToList().ForEach(i => i.Draw(spriteBatch));
-
-            if (m_currentClient != null)
+            // les clients
+            foreach (Client cli in liste_client.ToList())
             {
-                m_currentClient.Draw(spriteBatch);
+                cli.Draw(spriteBatch);
             }
 
             // La caisse
             m_cashier.Draw(spriteBatch);
 
-            if (m_currentClient != null)
+            foreach (Client cli in liste_client.ToList())
             {
-                m_basket.Draw(spriteBatch);
-            }
-
-            // Les produits : un tas difforme pour chaque client
-            foreach (Client c in m_clients)
-            {
-                foreach (ItemBase item in c.Items)
+                foreach (ItemBase produits in cli.Items.ToList())
                 {
-                    item.Draw(spriteBatch);
+                    produits.Draw(spriteBatch);
                 }
             }
 
+
+
+
+
             // La main en dernier
             m_hand.Draw(spriteBatch);
+            if (scanner_zone != Rectangle.Empty)
+            {
+                spriteBatch.DrawRectangle(scanner_zone, Color.Red * scanner_color);
+            }
+            spriteBatch.DrawString(Application.MagicContentManager.Font, time.ToString(), new Vector2(10, 10), Color.Chartreuse);
 
+            //panier.Draw(spriteBatch);
             spriteBatch.End();
         }
 
