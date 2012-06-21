@@ -29,6 +29,10 @@ namespace Super_Caissiere
             MouseDevice mouse = new MouseDevice(SuperCaissiere.Engine.Input.LogicalPlayerIndex.One);
             Application.InputManager.RegisterDevice(mouse);
 
+            //Register keyboard
+            KeyboardDevice keyboard = new KeyboardDevice(SuperCaissiere.Engine.Input.LogicalPlayerIndex.One);
+            keyboard.MapButton(Microsoft.Xna.Framework.Input.Keys.Space, SuperCaissiere.Engine.Input.MappingButtons.A);
+            Application.InputManager.RegisterDevice(keyboard);
             // Load the first scene
             GameStateManager.LoadGameState(GameStateManager.GetGameState<SplashscreenState>());
         }
