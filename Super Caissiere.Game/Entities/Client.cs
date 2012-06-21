@@ -12,11 +12,11 @@ namespace Super_Caissiere.Entities
 {
     public class Client : Entity
     {
-        private List<ItemBase> m_items;
+        private Queue<ItemBase> m_items;
         private ClientBody body;
         private ClientHead head;
 
-        public Client(Vector2 location)
+        public Client(Vector2 location,Vector2 location_produit)
             : base(null, location, Rectangle.Empty, Vector2.One)
         {
             int randomNumberFromGod = Application.Random.GetRandomInt(156475);
@@ -27,20 +27,24 @@ namespace Super_Caissiere.Entities
             head = new ClientHead(this);
 
             // Produits du client
-            m_items = new List<ItemBase>();
+            m_items = new Queue<ItemBase>();
+            Vector2 delta = new Vector2(0, 0);
 
             for (int i = 0; i < Application.Random.GetRandomInt(10) + 1; i++)
             {
                 var item = ItemBase.GetRandomItem();
-                m_items.Add(item);
+                item.Location = location_produit+delta;
+                m_items.Enqueue(item);
+                delta += new Vector2(90, 0);
             }
+
         }
 
         public override void Update(GameTime gameTime)
         {
             body.Update(gameTime);
             head.Update(gameTime);
-
+           
             base.Update(gameTime);
         }
 
@@ -56,7 +60,7 @@ namespace Super_Caissiere.Entities
             private set;
         }
 
-        public List<ItemBase> Items
+        public Queue<ItemBase> Items
         {
             get
             {
@@ -66,7 +70,7 @@ namespace Super_Caissiere.Entities
 
         public override Entity Clone()
         {
-            return new Client(Location);
+            return new Client(Location,Location);
         }
     }
 
