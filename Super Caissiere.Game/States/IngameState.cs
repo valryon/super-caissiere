@@ -16,16 +16,16 @@ namespace Super_Caissiere.States
 
         private Cashier m_cashier;
         private Hand m_hand;
-        private DateTime time;
-        private Queue<Client> liste_client;
-        private ItemBase produit_courant;
-        private bool boobool;
-        private bool boobool2;
-        private Rectangle scanner_zone;
-        private float scanner_color;
-        private Interpolator scanner_interpolator;
-        private ClientBasket panier;
-        
+        private DateTime m_time;
+        private Queue<Client> m_clientList;
+        private Product m_currentProduct;
+        private bool m_clientProductsAnimationComplete;
+        private bool m_isAnimatingScanner;
+        private Rectangle m_scannerZone;
+        private float m_scannerColor;
+        private Interpolator m_scannerInterpolator;
+        private ClientBasket m_basket;
+
 
         protected override void LoadContent()
         {
@@ -35,43 +35,62 @@ namespace Super_Caissiere.States
         {
             m_cashier = new Cashier();
             m_hand = new Hand();
-            liste_client = new Queue<Client>();
-            panier = new ClientBasket();
-            time = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 9, 0, 0);
+            m_clientList = new Queue<Client>();
+            m_basket = new ClientBasket();
+            m_time = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 9, 0, 0);
         }
 
         public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
         {
+            // Mise à jour des entités
             m_cashier.Update(gameTime);
             m_hand.Update(gameTime);
-            if (liste_client.FirstOrDefault() == null)
+            m_basket.Update(gameTime);
+
+            // Ajouter un client s'il n'y en a plus
+            if (m_clientList.FirstOrDefault() == null)
             {
-                liste_client.Enqueue(new Client(new Vector2(500, 170), new Vector2(500, 400)));
+                m_clientList.Enqueue(new Client(new Vector2(500, 170), new Vector2(500, 400)));
 
             }
-            foreach (Client cli in liste_client.ToList())
+
+            foreach (Client cli in m_clientList.ToList())
             {
                 cli.Update(gameTime);
-                foreach (ItemBase produits in cli.Items.ToList())
+                foreach (Product produits in cli.Items.ToList())
                 {
                     produits.Update(gameTime);
                 }
             }
 
-            time = time.AddSeconds(gameTime.ElapsedGameTime.TotalSeconds);
+            // Mise à jour du temps
+            m_time = m_time.AddMinutes(gameTime.ElapsedGameTime.TotalSeconds);
 
-            //appuyer sur espace
+            // Gestion entrées joueur
+            handleInput();
+
+            base.Update(gameTime);
+        }
+
+        private void handleInput()
+        {
+            // Appui sur espace : ACTION
             var key = Application.InputManager.GetDevice<KeyboardDevice>(SuperCaissiere.Engine.Input.LogicalPlayerIndex.One);
-            if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed && boobool2==false)
+
+            // Possible uniquement si on ne fait rien d'autre
+            if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed && m_isAnimatingScanner == false)
             {
-                if (produit_courant == null)
+                // Pas de produit devant le joueur : on en met un
+                if (m_currentProduct == null)
                 {
-                    boobool = false;
-                    produit_courant = liste_client.First().Items.First();
+                    m_clientProductsAnimationComplete = false;
+
+                    m_currentProduct = m_clientList.First().Items.First();
+
                     Timer.Create(0.02F, true, (t =>
                     {
-                        produit_courant.Location += new Vector2(-5, 0);
-                        if (produit_courant.Location.X < 300)
+                        m_currentProduct.Location += new Vector2(-5, 0);
+                        if (m_currentProduct.Location.X < 300)
                         {
                             t.Stop();
                         }
@@ -79,19 +98,20 @@ namespace Super_Caissiere.States
                 }
                 else
                 {
-                    if (boobool == false)
+                    // On décale les produits qui sont sur le tapis
+                    if (m_clientProductsAnimationComplete == false)
                     {
                         Timer.Create(0.02F, true, (t =>
                         {
-                            foreach (ItemBase item in liste_client.First().Items)
+                            foreach (Product item in m_clientList.First().Items)
                             {
-                                if (item != produit_courant)
+                                if (item != m_currentProduct)
                                 {
                                     item.Location += new Vector2(-5, 0);
                                     if (item.Location.X < 450)
                                     {
                                         t.Stop();
-                                        boobool = true;
+                                        m_clientProductsAnimationComplete = true;
                                     }
 
                                 }
@@ -101,55 +121,64 @@ namespace Super_Caissiere.States
                 }
             }
 
+            // Clic sur la souris = SCAN
             var mouse = Application.InputManager.GetDevice<MouseDevice>(SuperCaissiere.Engine.Input.LogicalPlayerIndex.One);
             if (mouse.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed)
             {
-               
-                scanner_color = 1;
+                // On regarde s'il y a collision
+                m_scannerColor = 1;
                 int larg = 50;
                 int haut = 100;
-                scanner_zone = new Rectangle(m_hand.DstRect.Left + larg, m_hand.DstRect.Top + haut, m_hand.DstRect.Width - (larg*2), m_hand.DstRect.Height - (haut*2));
-                if (produit_courant != null) { 
-                    if(scanner_zone.Intersects(produit_courant.DstRect)){
-                        boobool2 = true;
+
+                m_scannerZone = new Rectangle(m_hand.DstRect.Left + larg, m_hand.DstRect.Top + haut, m_hand.DstRect.Width - (larg * 2), m_hand.DstRect.Height - (haut * 2));
+
+                // Avec le produit courant
+                if (m_currentProduct != null)
+                {
+                    if (m_scannerZone.Intersects(m_currentProduct.DstRect))
+                    {
+                        // Collision
+                        m_isAnimatingScanner = true;
+
                         Timer.Create(0.02F, true, (t =>
                         {
-                            produit_courant.Location += new Vector2(-5, 0);
-                            if (produit_courant.Location.X < 100)
+                            // Déplacement du produit dans le panier final
+                            m_currentProduct.Location += new Vector2(-5, 0);
+
+                            if (m_currentProduct.Location.X < 100)
                             {
                                 t.Stop();
-                                boobool2 = false;
-                                panier.AddItem(produit_courant);
-                                liste_client.First().Items.Dequeue();
-                                produit_courant = null;
+                                m_isAnimatingScanner = false;
+                                m_basket.AddItem(m_currentProduct);
+                                m_clientList.First().Items.Dequeue();
+                                m_currentProduct = null;
 
                             }
                         }));
                     }
-                 }
-                // Timer.Create(0.02F, true, (t => {
-                if (scanner_interpolator != null)
-                {
-                    scanner_interpolator.Stop();
-                    scanner_interpolator = null;
                 }
-                   scanner_interpolator= Interpolator.Create(1.0F, 0F, 0.35F, (i => {
-                        scanner_color = i.Value;
-                    }), (i => {
-                        scanner_zone = Rectangle.Empty;
-                    }));
-              //  }));
 
+                // Animation du scanner
+                if (m_scannerInterpolator != null)
+                {
+                    m_scannerInterpolator.Stop();
+                    m_scannerInterpolator = null;
+                }
+                m_scannerInterpolator = Interpolator.Create(1.0F, 0F, 0.35F, (i =>
+                {
+                    m_scannerColor = i.Value;
+                }), (i =>
+                {
+                    m_scannerZone = Rectangle.Empty;
+                }));
             }
-            panier.Update(gameTime);
-            base.Update(gameTime);
         }
 
         public override void Draw(SuperCaissiere.Engine.Graphics.SpriteBatchProxy spriteBatch)
         {
             spriteBatch.Begin(SceneCamera);
             // les clients
-            foreach (Client cli in liste_client.ToList())
+            foreach (Client cli in m_clientList.ToList())
             {
                 cli.Draw(spriteBatch);
             }
@@ -157,9 +186,9 @@ namespace Super_Caissiere.States
             // La caisse
             m_cashier.Draw(spriteBatch);
 
-            foreach (Client cli in liste_client.ToList())
+            foreach (Client cli in m_clientList.ToList())
             {
-                foreach (ItemBase produits in cli.Items.ToList())
+                foreach (Product produits in cli.Items.ToList())
                 {
                     produits.Draw(spriteBatch);
                 }
@@ -171,11 +200,11 @@ namespace Super_Caissiere.States
 
             // La main en dernier
             m_hand.Draw(spriteBatch);
-            if (scanner_zone != Rectangle.Empty)
+            if (m_scannerZone != Rectangle.Empty)
             {
-                spriteBatch.DrawRectangle(scanner_zone, Color.Red * scanner_color);
+                spriteBatch.DrawRectangle(m_scannerZone, Color.Red * m_scannerColor);
             }
-            spriteBatch.DrawString(Application.MagicContentManager.Font, time.ToString(), new Vector2(10, 10), Color.Chartreuse);
+            spriteBatch.DrawString(Application.MagicContentManager.Font, m_time.ToString(), new Vector2(10, 10), Color.Chartreuse);
 
             //panier.Draw(spriteBatch);
             spriteBatch.End();

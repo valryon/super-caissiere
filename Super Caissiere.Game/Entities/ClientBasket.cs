@@ -16,13 +16,13 @@ namespace Super_Caissiere.Entities
         public ClientBasket()
             : base("panier", new Vector2(0, 260), new Rectangle(0, 0, 256, 256), Vector2.One)
         {
-            Items = new List<ItemBase>();
+            Items = new List<Product>();
 
             Rectangle dim = new Rectangle((int)Location.X + 50, (int)Location.Y + 100, DstRect.Width - 100, DstRect.Height - 100);
             hitbox = new SuperCaissiere.Engine.Physics.Hitbox(dim);
         }
 
-        public void AddItem(ItemBase item)
+        public void AddItem(Product item)
         {
             item.Location = hitbox.Dimensions.Center.ToVector2();
             item.Rotation = Application.Random.GetRandomFloat(0, 2 * Math.PI);
@@ -53,6 +53,6 @@ namespace Super_Caissiere.Entities
             return new ClientBasket();
         }
 
-        public List<ItemBase> Items { get; private set; }
+        public List<Product> Items { get; private set; }
     }
 }

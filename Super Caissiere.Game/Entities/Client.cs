@@ -12,7 +12,7 @@ namespace Super_Caissiere.Entities
 {
     public class Client : Entity
     {
-        private Queue<ItemBase> m_items;
+        private Queue<Product> m_items;
         private ClientBody body;
         private ClientHead head;
 
@@ -27,12 +27,12 @@ namespace Super_Caissiere.Entities
             head = new ClientHead(this);
 
             // Produits du client
-            m_items = new Queue<ItemBase>();
+            m_items = new Queue<Product>();
             Vector2 delta = new Vector2(0, 0);
 
             for (int i = 0; i < Application.Random.GetRandomInt(10) + 1; i++)
             {
-                var item = ItemBase.GetRandomItem();
+                var item = Product.GetRandomItem();
                 item.Location = location_produit+delta;
                 m_items.Enqueue(item);
                 delta += new Vector2(90, 0);
@@ -60,7 +60,7 @@ namespace Super_Caissiere.Entities
             private set;
         }
 
-        public Queue<ItemBase> Items
+        public Queue<Product> Items
         {
             get
             {

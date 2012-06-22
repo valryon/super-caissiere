@@ -8,7 +8,7 @@ using SuperCaissiere.Engine.Physics;
 namespace Super_Caissiere.Entities.Items
 {
     [TextureContent(AssetName = "cacolac", AssetPath = "gfxs/sprites/cacolac", LoadOnStartup = false)]
-    public class Cacolac : ItemBase
+    public class Cacolac : Product
     {
         public Cacolac()
             : base("cacolac", new Microsoft.Xna.Framework.Rectangle(0, 0, 128, 128))

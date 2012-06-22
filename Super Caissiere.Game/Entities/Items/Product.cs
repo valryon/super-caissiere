@@ -7,9 +7,9 @@ using Microsoft.Xna.Framework;
 
 namespace Super_Caissiere.Entities.Items
 {
-    public abstract class ItemBase : Entity
+    public abstract class Product : Entity
     {
-        public ItemBase(string assetName, Rectangle src)
+        public Product(string assetName, Rectangle src)
             : base(assetName, Vector2.Zero, src, Vector2.One)
         {
 
@@ -19,16 +19,16 @@ namespace Super_Caissiere.Entities.Items
         { get; }
 
 
-        public static ItemBase GetRandomItem()
+        public static Product GetRandomItem()
         {
-            var list = (from t in typeof(ItemBase).Assembly.GetTypes()
-             where t.IsSubclassOf(typeof(ItemBase))
+            var list = (from t in typeof(Product).Assembly.GetTypes()
+             where t.IsSubclassOf(typeof(Product))
              select t).ToList();
 
             var selectedType = list.GetRandomElement();
 
             // Instancie l'objet à partir du type
-            return (ItemBase)selectedType.GetConstructor(new Type[0]).Invoke(null);
+            return (Product)selectedType.GetConstructor(new Type[0]).Invoke(null);
         }
     }
 }

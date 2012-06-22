@@ -8,7 +8,7 @@ using SuperCaissiere.Engine.Physics;
 namespace Super_Caissiere.Entities.Items
 {
     [TextureContent(AssetName = "cassoulet", AssetPath = "gfxs/sprites/cassoulet", LoadOnStartup = false)]
-    public class Cassoulet : ItemBase
+    public class Cassoulet : Product
     {
         public Cassoulet()
             : base("cassoulet", new Microsoft.Xna.Framework.Rectangle(0, 0, 92, 128))
