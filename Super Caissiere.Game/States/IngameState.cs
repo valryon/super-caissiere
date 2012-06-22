@@ -26,7 +26,6 @@ namespace Super_Caissiere.States
         private Interpolator m_scannerInterpolator;
         private ClientBasket m_basket;
 
-
         protected override void LoadContent()
         {
         }
@@ -51,7 +50,6 @@ namespace Super_Caissiere.States
             if (m_clientList.FirstOrDefault() == null)
             {
                 m_clientList.Enqueue(new Client(new Vector2(500, 170), new Vector2(500, 400)));
-
             }
 
             foreach (Client cli in m_clientList.ToList())
@@ -65,6 +63,12 @@ namespace Super_Caissiere.States
 
             // Mise à jour du temps
             m_time = m_time.AddMinutes(gameTime.ElapsedGameTime.TotalSeconds);
+
+            // Pause du midi
+            if (m_time.Hour > 18)
+            {
+                // TODO Fin de la partie
+            }
 
             // Gestion entrées joueur
             handleInput();
@@ -85,16 +89,24 @@ namespace Super_Caissiere.States
                 {
                     m_clientProductsAnimationComplete = false;
 
-                    m_currentProduct = m_clientList.First().Items.First();
+                    var firstClient = m_clientList.FirstOrDefault();
 
-                    Timer.Create(0.02F, true, (t =>
+                    if (firstClient != null)
                     {
-                        m_currentProduct.Location += new Vector2(-5, 0);
-                        if (m_currentProduct.Location.X < 300)
+                        m_currentProduct = firstClient.Items.FirstOrDefault();
+
+                        if (m_currentProduct != null)
                         {
-                            t.Stop();
+                            Timer.Create(0.02F, true, (t =>
+                            {
+                                m_currentProduct.Location += new Vector2(-5, 0);
+                                if (m_currentProduct.Location.X < 300)
+                                {
+                                    t.Stop();
+                                }
+                            }));
                         }
-                    }));
+                    }
                 }
                 else
                 {
@@ -194,8 +206,8 @@ namespace Super_Caissiere.States
                 }
             }
 
-
-
+            // Le panier
+            m_basket.Draw(spriteBatch);
 
 
             // La main en dernier

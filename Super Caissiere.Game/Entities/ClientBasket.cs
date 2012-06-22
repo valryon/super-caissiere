@@ -14,7 +14,7 @@ namespace Super_Caissiere.Entities
     public class ClientBasket : Entity
     {
         public ClientBasket()
-            : base("panier", new Vector2(0, 260), new Rectangle(0, 0, 256, 256), Vector2.One)
+            : base("panier", new Vector2(0, 360), new Rectangle(0, 0, 256, 256), new Vector2(0.5f,0.5f))
         {
             Items = new List<Product>();
 
@@ -24,7 +24,7 @@ namespace Super_Caissiere.Entities
 
         public void AddItem(Product item)
         {
-            item.Location = hitbox.Dimensions.Center.ToVector2();
+            item.Location = new Vector2(hitbox.Dimensions.Left, hitbox.Dimensions.Top);
             item.Rotation = Application.Random.GetRandomFloat(0, 2 * Math.PI);
 
             Items.Add(item);
@@ -43,7 +43,7 @@ namespace Super_Caissiere.Entities
             Items.ForEach(i => i.Draw(spriteBatch));
 
             // On dessine deux fois le panier pour avoir de la profondeur !
-            //base.Draw(spriteBatch);
+            base.Draw(spriteBatch);
 
             hitbox.Draw(spriteBatch);
         }
