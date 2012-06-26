@@ -82,6 +82,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="SCGame.cs" />
+    <Compile Include="SpecialEffects\SpecialEffectsHelper.cs" />
     <Compile Include="States\IngameState.cs" />
     <Compile Include="States\HomeState.cs" />
     <Compile Include="States\SplashscreenState.cs" />
