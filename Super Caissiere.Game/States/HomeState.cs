@@ -65,7 +65,7 @@ namespace Super_Caissiere.States
                                 m_sub2Loc.X = i3.Value;
                             }, (i3) =>
                             {
-                                Timer.Create(0.5f, false, (t) =>
+                                Timer.Create(5.5f, false, (t) =>
                                 {
                                     m_isAnimationCompleted = true;
                                 });

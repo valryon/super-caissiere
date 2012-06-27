@@ -8,6 +8,8 @@ using Super_Caissiere.Entities.Items;
 using Microsoft.Xna.Framework.Input;
 using SuperCaissiere.Engine.Input.Devices;
 using SuperCaissiere.Engine.Utils;
+using SuperCaissiere.Engine.Graphics;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Super_Caissiere.States
 {
@@ -25,6 +27,7 @@ namespace Super_Caissiere.States
         private float m_scannerColor;
         private Interpolator m_scannerInterpolator;
         private ClientBasket m_basket;
+        private Model3DRenderer m_render;
 
         protected override void LoadContent()
         {
@@ -37,6 +40,11 @@ namespace Super_Caissiere.States
             m_clientList = new Queue<Client>();
             m_basket = new ClientBasket();
             m_time = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 9, 0, 0);
+            Matrix world, view, projection;
+            world = Matrix.Identity;
+            view = Matrix.CreateLookAt(new Vector3(0, 0, 5), Vector3.Zero, Vector3.Up);
+            projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, Application.Graphics.GraphicsDevice.Viewport.AspectRatio, 1, 10);
+            m_render = new Model3DRenderer(Application.Graphics.GraphicsDevice, Application.SpriteBatch, projection, view, world);
         }
 
         public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
@@ -45,7 +53,7 @@ namespace Super_Caissiere.States
             m_cashier.Update(gameTime);
             m_hand.Update(gameTime);
             m_basket.Update(gameTime);
-
+            m_render.Update(gameTime);
             // Ajouter un client s'il n'y en a plus
             if (m_clientList.FirstOrDefault() == null)
             {
@@ -72,7 +80,7 @@ namespace Super_Caissiere.States
 
             // Gestion entrées joueur
             handleInput();
-
+            
             base.Update(gameTime);
         }
 
@@ -81,6 +89,17 @@ namespace Super_Caissiere.States
             // Appui sur espace : ACTION
             var key = Application.InputManager.GetDevice<KeyboardDevice>(SuperCaissiere.Engine.Input.LogicalPlayerIndex.One);
 
+            //ici on fait tourner les serviettes :3
+            m_render.resetRotate();
+            /**
+             * TODO ->mettre des directions
+             * 
+             **/       
+            if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.LB).IsDown) m_render.rotateX(-0.05f); //up
+            if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.LB).IsDown) m_render.rotateX(0.05f); //down
+            if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.LB).IsDown) m_render.rotateY(-0.05f); //left
+            if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.LB).IsDown) m_render.rotateY(0.05f);  //right
+            
             // Possible uniquement si on ne fait rien d'autre
             if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed && m_isAnimatingScanner == false)
             {

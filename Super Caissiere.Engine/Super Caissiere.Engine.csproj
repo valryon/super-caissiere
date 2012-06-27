@@ -104,6 +104,7 @@
     <Compile Include="Extensions\Rectangle.cs" />
     <Compile Include="Extensions\Vector2.cs" />
     <Compile Include="Graphics\Camera.cs" />
+    <Compile Include="Graphics\Model3DRenderer.cs" />
     <Compile Include="Graphics\Resolution.cs" />
     <Compile Include="Graphics\SpriteBatchProxy.cs" />
     <Compile Include="Content\MagicContentManager.cs" />
