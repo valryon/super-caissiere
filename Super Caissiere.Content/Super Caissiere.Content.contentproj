@@ -126,7 +126,28 @@
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Compile Include="models\TEXTUREcereals.png">
+      <Name>TEXTUREcereals</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="models\TEXTUREmetalboxBURGER.png">
+      <Name>TEXTUREmetalboxBURGER</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="models\TEXTUREmetalboxCASSOULET.png">
+      <Name>TEXTUREmetalboxCASSOULET</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="models\TEXTUREmetalboxCHILI.png">
+      <Name>TEXTUREmetalboxCHILI</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="models\chili.fbx">
       <Name>chili</Name>

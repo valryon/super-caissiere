@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Net;
-using Microsoft.Xna.Framework.Storage;
 
 
 namespace SuperCaissiere.Engine.Graphics
@@ -15,22 +8,22 @@ namespace SuperCaissiere.Engine.Graphics
     public class Model3DRenderer
     {
 
-        GraphicsDevice graphicDevice;
-        Matrix World, View, Projection;
-        Vector3 Rotation;
-        SpriteBatchProxy spriteBatch;
-        RenderTarget2D tmpTarget;
-        Model model, modelcol;
-        Random randomizator;
-        float time = 0.00f;
+        private GraphicsDevice graphicDevice;
+        private Matrix world, view, projection;
+        private Vector3 Rotation;
+        private SpriteBatchProxy spriteBatch;
+        private RenderTarget2D tmpTarget;
+        private Model model, modelcol;
+        private Random randomizator;
+        private float time = 0.00f;
 
 
         public Model3DRenderer(GraphicsDevice _dev, SpriteBatchProxy _sprbtch, Matrix _proj, Matrix _view, Matrix _world)
         {
             Rotation = new Vector3();
-            World = _world;
-            Projection = _proj;
-            View = _view;
+            world = _world;
+            projection = _proj;
+            view = _view;
             graphicDevice = _dev;
             spriteBatch = _sprbtch;
             tmpTarget = new RenderTarget2D(graphicDevice, graphicDevice.Viewport.Width, graphicDevice.Viewport.Height);
@@ -47,9 +40,9 @@ namespace SuperCaissiere.Engine.Graphics
         private void getRandomRotation()
         {
 
-            World *= Matrix.CreateRotationX((float)randomizator.NextDouble() * 360);
-            World *= Matrix.CreateRotationY((float)randomizator.NextDouble() * 360);
-            World *= Matrix.CreateRotationZ((float)randomizator.NextDouble() * 360);
+            world *= Matrix.CreateRotationX((float)randomizator.NextDouble() * 360);
+            world *= Matrix.CreateRotationY((float)randomizator.NextDouble() * 360);
+            world *= Matrix.CreateRotationZ((float)randomizator.NextDouble() * 360);
         }
 
         public void resetRotate()
@@ -71,9 +64,9 @@ namespace SuperCaissiere.Engine.Graphics
         }
         public void Update(GameTime gameTime)
         {
-            World *= Matrix.CreateRotationX(Rotation.X);
-            World *= Matrix.CreateRotationY(Rotation.Y);
-            World *= Matrix.CreateRotationZ(Rotation.Z);
+            world *= Matrix.CreateRotationX(Rotation.X);
+            world *= Matrix.CreateRotationY(Rotation.Y);
+            world *= Matrix.CreateRotationZ(Rotation.Z);
             time += 0.01f;
         }
 
@@ -85,9 +78,9 @@ namespace SuperCaissiere.Engine.Graphics
             {
                 foreach (BasicEffect be in mesh.Effects)
                 {
-                    be.Projection = Projection;
-                    be.View = View;
-                    be.World = World;
+                    be.Projection = projection;
+                    be.View = view;
+                    be.World = world;
                 }
                 mesh.Draw();
             }

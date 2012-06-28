@@ -72,6 +72,7 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="QTEs\BarCodeQTE.cs" />
     <Compile Include="Entities\Cashier.cs" />
     <Compile Include="Entities\Client.cs" />
     <Compile Include="Entities\ClientBasket.cs" />
