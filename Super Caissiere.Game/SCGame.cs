@@ -25,6 +25,7 @@ namespace Super_Caissiere
             GameStateManager.RegisterGameState(new HomeState());
             GameStateManager.RegisterGameState(new IngameState());
             GameStateManager.RegisterGameState(new CreditsGameState());
+            GameStateManager.RegisterGameState(new EndgameState());
 
             // Register mouse
             MouseDevice mouse = new MouseDevice(SuperCaissiere.Engine.Input.LogicalPlayerIndex.One);

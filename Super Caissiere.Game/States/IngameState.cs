@@ -29,12 +29,17 @@ namespace Super_Caissiere.States
         private ClientBasket m_basket;
         private Model3DRenderer m_render;
 
+        private bool m_ending;
+        private int m_hp;
+
         protected override void LoadContent()
         {
         }
 
         protected override void InternalLoad()
         {
+            m_hp = 100;
+
             m_cashier = new Cashier();
             m_hand = new Hand();
             m_clientList = new Queue<Client>();
@@ -46,6 +51,8 @@ namespace Super_Caissiere.States
             projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, Application.Graphics.GraphicsDevice.Viewport.AspectRatio, 1, 10);
             m_render = new Model3DRenderer(Application.Graphics.GraphicsDevice, Application.SpriteBatch, projection, view, world);
 
+            m_ending = false;
+
             SceneCamera.FadeOut(40, null, Color.Chocolate);
         }
 
@@ -56,6 +63,7 @@ namespace Super_Caissiere.States
             m_hand.Update(gameTime);
             m_basket.Update(gameTime);
             m_render.Update(gameTime);
+
             // Ajouter un client s'il n'y en a plus
             if (m_clientList.FirstOrDefault() == null)
             {
@@ -74,16 +82,51 @@ namespace Super_Caissiere.States
             // Mise à jour du temps
             m_time = m_time.AddMinutes(gameTime.ElapsedGameTime.TotalSeconds);
 
-            // Pause du midi
-            if (m_time.Hour > 18)
-            {
-                // TODO Fin de la partie
-            }
+            manageEnd();
 
             // Gestion entrées joueur
             handleInput();
 
             base.Update(gameTime);
+        }
+
+        private void manageEnd()
+        {
+            bool endGame = false;
+            bool isWin = true;
+
+            // Pause du midi
+
+            // Fin de la journée
+
+            // Virée ?
+            if (m_hp <= 0)
+            {
+                endGame = true;
+                isWin = false;
+            }
+            //if (m_time.Hour > 18)
+            if (m_time.Second > 5) // Debug T.T
+            {
+                endGame = true;
+                isWin = true;
+            }
+
+            if (endGame)
+            {
+                if (m_ending == false)
+                {
+                    m_ending = true;
+                    SceneCamera.FadeIn(120, () =>
+                    {
+                        var state = (EndgameState)Application.GameStateManager.GetGameState<EndgameState>();
+                        state.Win = isWin;
+
+                        ChangeCurrentGameState = true;
+                        NextGameState = state;
+                    }, Color.Black);
+                }
+            }
         }
 
         private void handleInput()

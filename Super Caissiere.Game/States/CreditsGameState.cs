@@ -12,7 +12,7 @@ namespace Super_Caissiere.States
     [TextureContent(AssetName = "background", AssetPath = "gfxs/credits/background", LoadOnStartup = true)]
     public class CreditsGameState : GameState
     {
-        private Vector2 translation;
+        private bool shakeshakeshake;
 
         protected override void LoadContent()
         {
@@ -20,10 +20,8 @@ namespace Super_Caissiere.States
 
         protected override void InternalLoad()
         {
-            translation = new Vector2(20, 20);
+            shakeshakeshake = true;
             SceneCamera.FadeOut(20, null, Color.Beige);
-
-            SpecialEffects.SpecialEffectsHelper.ShakeScreen(new Vector2(10, 10), 10);
         }
 
         public override void Update(GameTime gameTime)
@@ -37,7 +35,11 @@ namespace Super_Caissiere.States
                 NextGameState = Application.GameStateManager.GetGameState<HomeState>();
             }
 
-          //  SpecialEffects.SpecialEffectsHelper.ShakeScreen(new Vector2(10, 10), 10);
+            if (shakeshakeshake)
+            {
+                SpecialEffects.SpecialEffectsHelper.ShakeScreen(new Vector2(10, 10), 10);
+                shakeshakeshake = false;
+            }
         }
 
         public override void Draw(SuperCaissiere.Engine.Graphics.SpriteBatchProxy spriteBatch)
