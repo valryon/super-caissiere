@@ -45,6 +45,8 @@ namespace Super_Caissiere.States
             view = Matrix.CreateLookAt(new Vector3(0, 0, 5), Vector3.Zero, Vector3.Up);
             projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, Application.Graphics.GraphicsDevice.Viewport.AspectRatio, 1, 10);
             m_render = new Model3DRenderer(Application.Graphics.GraphicsDevice, Application.SpriteBatch, projection, view, world);
+
+            SceneCamera.FadeOut(40, null, Color.Chocolate);
         }
 
         public override void Update(Microsoft.Xna.Framework.GameTime gameTime)

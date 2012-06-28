@@ -94,13 +94,20 @@ namespace Super_Caissiere.States
                     switch (m_selectedOption)
                     {
                         case 0:
-                            NextGameState = Application.GameStateManager.GetGameState<IngameState>();
-                            ChangeCurrentGameState = true;
+
+                            SceneCamera.FadeIn(20, () =>
+                            {
+                                NextGameState = Application.GameStateManager.GetGameState<IngameState>();
+                                ChangeCurrentGameState = true;
+                            }, Color.AntiqueWhite);
                             break;
 
                         case 1:
-                            NextGameState = Application.GameStateManager.GetGameState<CreditsGameState>();
-                            ChangeCurrentGameState = true;
+                            SceneCamera.FadeIn(20, () =>
+                            {
+                                NextGameState = Application.GameStateManager.GetGameState<CreditsGameState>();
+                                ChangeCurrentGameState = true;
+                            }, Color.AntiqueWhite);
                             break;
 
                         case 2:
@@ -114,7 +121,7 @@ namespace Super_Caissiere.States
                 {
                     m_selectedOption--;
                     disableInputFOrAWhile();
-                    
+
                 }
                 else if (key.ThumbStickLeft.Y > 0)
                 {
