@@ -10,9 +10,12 @@ using SuperCaissiere.Engine.Input.Devices;
 using SuperCaissiere.Engine.Utils;
 using SuperCaissiere.Engine.Graphics;
 using Microsoft.Xna.Framework.Graphics;
+using SuperCaissiere.Engine.Content;
 
 namespace Super_Caissiere.States
 {
+    [TextureContent(AssetName = "ingamebg", AssetPath = "gfxs/ingame/background", LoadOnStartup = true)]
+    [TextureContent(AssetName = "ingamebgpause", AssetPath = "gfxs/ingame/background_pause", LoadOnStartup = true)]
     public class IngameState : GameState
     {
 
@@ -31,6 +34,7 @@ namespace Super_Caissiere.States
 
         private bool m_ending;
         private int m_hp;
+        private bool m_pauseMidi, m_pauseMidiAnimation;
 
         protected override void LoadContent()
         {
@@ -52,40 +56,64 @@ namespace Super_Caissiere.States
             m_render = new Model3DRenderer(Application.Graphics.GraphicsDevice, Application.SpriteBatch, projection, view, world);
 
             m_ending = false;
+            m_pauseMidi = false;
+            m_pauseMidiAnimation = false;
 
             SceneCamera.FadeOut(40, null, Color.Chocolate);
         }
 
         public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
         {
-            // Mise à jour des entités
-            m_cashier.Update(gameTime);
-            m_hand.Update(gameTime);
-            m_basket.Update(gameTime);
-            m_render.Update(gameTime);
+            // Mise à jour du temps
+            float delta = 3;
+            delta = 20; // DEBUG
+            m_time = m_time.AddMinutes(gameTime.ElapsedGameTime.TotalSeconds * delta);
 
-            // Ajouter un client s'il n'y en a plus
-            if (m_clientList.FirstOrDefault() == null)
+            if (m_pauseMidi == false)
             {
-                m_clientList.Enqueue(new Client(new Vector2(500, 170), new Vector2(500, 400)));
-            }
+                // Mise à jour des entités
+                m_cashier.Update(gameTime);
+                m_hand.Update(gameTime);
+                m_basket.Update(gameTime);
+                m_render.Update(gameTime);
 
-            foreach (Client cli in m_clientList.ToList())
-            {
-                cli.Update(gameTime);
-                foreach (Product produits in cli.Items.ToList())
+                // Ajouter un client s'il n'y en a plus
+                if (m_clientList.FirstOrDefault() == null)
                 {
-                    produits.Update(gameTime);
+                    m_clientList.Enqueue(new Client(new Vector2(500, 170), new Vector2(500, 400)));
+                }
+
+                foreach (Client cli in m_clientList.ToList())
+                {
+                    cli.Update(gameTime);
+                    foreach (Product produits in cli.Items.ToList())
+                    {
+                        produits.Update(gameTime);
+                    }
+                }
+
+                manageEnd();
+
+                // Gestion entrées joueur
+                handleInput();
+            }
+            // Pause du midi
+            else
+            {
+                if (m_time.Hour > 13)
+                {
+                    if (m_pauseMidiAnimation)
+                    {
+                        m_pauseMidiAnimation = false;
+
+                        SceneCamera.FadeIn(30, () =>
+                        {
+                            m_pauseMidi = false;
+                            SceneCamera.FadeOut(30, null, Color.White);
+                        }, Color.HotPink);
+                    }
                 }
             }
-
-            // Mise à jour du temps
-            m_time = m_time.AddMinutes(gameTime.ElapsedGameTime.TotalSeconds);
-
-            manageEnd();
-
-            // Gestion entrées joueur
-            handleInput();
 
             base.Update(gameTime);
         }
@@ -96,20 +124,30 @@ namespace Super_Caissiere.States
             bool isWin = true;
 
             // Pause du midi
+            if ((m_time.Hour > 11 && m_time.Hour < 14) && (m_pauseMidiAnimation == false))
+            {
+                m_pauseMidiAnimation = true;
 
+                SceneCamera.FadeIn(30, () =>
+                {
+                    m_pauseMidi = true;
+                    SceneCamera.FadeOut(30, null, Color.White);
+                }, Color.HotPink);
+
+            }
             // Fin de la journée
+            else if (m_time.Hour > 17)
+            //else if (m_time.Second > 5) // Debug T.T
+            {
+                endGame = true;
+                isWin = true;
+            }
 
             // Virée ?
             if (m_hp <= 0)
             {
                 endGame = true;
                 isWin = false;
-            }
-            //if (m_time.Hour > 18)
-            if (m_time.Second > 5) // Debug T.T
-            {
-                endGame = true;
-                isWin = true;
             }
 
             if (endGame)
@@ -141,6 +179,8 @@ namespace Super_Caissiere.States
             if (key.ThumbStickLeft.Y > 0) m_render.rotateX(0.05f); //down
             if (key.ThumbStickLeft.X < 0) m_render.rotateY(-0.05f); //left
             if (key.ThumbStickLeft.X > 0) m_render.rotateY(0.05f);  //right
+
+            if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsDown) m_hp--;
 
             // Possible uniquement si on ne fait rien d'autre
             if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed && m_isAnimatingScanner == false)
@@ -250,36 +290,63 @@ namespace Super_Caissiere.States
         public override void Draw(SuperCaissiere.Engine.Graphics.SpriteBatchProxy spriteBatch)
         {
             spriteBatch.Begin(SceneCamera);
-            // les clients
-            foreach (Client cli in m_clientList.ToList())
-            {
-                cli.Draw(spriteBatch);
-            }
 
-            // La caisse
-            m_cashier.Draw(spriteBatch);
-
-            foreach (Client cli in m_clientList.ToList())
+            if (m_pauseMidi == false)
             {
-                foreach (Product produits in cli.Items.ToList())
+                spriteBatch.Draw(Application.MagicContentManager.GetTexture("ingamebg"), SceneCamera.VisibilityRectangle, Color.White);
+
+                // les clients
+                foreach (Client cli in m_clientList.ToList())
                 {
-                    produits.Draw(spriteBatch);
+                    cli.Draw(spriteBatch);
                 }
+
+                // La caisse
+                m_cashier.Draw(spriteBatch);
+
+                foreach (Client cli in m_clientList.ToList())
+                {
+                    foreach (Product produits in cli.Items.ToList())
+                    {
+                        produits.Draw(spriteBatch);
+                    }
+                }
+
+                // Le panier
+                m_basket.Draw(spriteBatch);
+
+
+                // La main en dernier
+                m_hand.Draw(spriteBatch);
+                if (m_scannerZone != Rectangle.Empty)
+                {
+                    spriteBatch.DrawRectangle(m_scannerZone, Color.Red * m_scannerColor);
+                }
+                //panier.Draw(spriteBatch);
+
+                Color color = Color.White;
+
+                if (m_hp < 90) color = Color.Yellow;
+                if (m_hp < 80) color = Color.YellowGreen;
+                if (m_hp < 70) color = Color.Orange;
+                if (m_hp < 60) color = Color.OrangeRed;
+                if (m_hp < 60) color = Color.Red;
+                if (m_hp < 50) color = Color.RosyBrown;
+                if (m_hp < 40) color = Color.Purple;
+                if (m_hp < 30) color = Color.PowderBlue;
+                if (m_hp < 20) color = Color.MintCream;
+                if (m_hp < 10) color = Color.Black;
+
+                spriteBatch.DrawString(Application.MagicContentManager.Font, "Patron niveau bohneur : " + m_hp + " %", new Vector2(10, 30), color);
             }
-
-            // Le panier
-            m_basket.Draw(spriteBatch);
-
-
-            // La main en dernier
-            m_hand.Draw(spriteBatch);
-            if (m_scannerZone != Rectangle.Empty)
+            // Pause du midi
+            else
             {
-                spriteBatch.DrawRectangle(m_scannerZone, Color.Red * m_scannerColor);
+                spriteBatch.Draw(Application.MagicContentManager.GetTexture("ingamebgpause"), SceneCamera.VisibilityRectangle, Color.White);
             }
+
             spriteBatch.DrawString(Application.MagicContentManager.Font, m_time.ToString(), new Vector2(10, 10), Color.Chartreuse);
 
-            //panier.Draw(spriteBatch);
             spriteBatch.End();
         }
 

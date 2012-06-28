@@ -14,15 +14,18 @@ namespace Super_Caissiere.States
     [TextureContent(AssetName = "happyend", AssetPath = "gfxs/gameover/happyend", LoadOnStartup = true)]
     public class BackgroundVomitif : Entity
     {
-        public BackgroundVomitif(bool win)
-            : base(win ? "happyend" : "badend", new Vector2(400,300), new Rectangle(0, 0, 800, 600), new Vector2(1.25f, 1.25f))
+        private bool win = false;
+
+        public BackgroundVomitif(bool _win)
+            : base(_win ? "happyend" : "badend", new Vector2(400, 300), new Rectangle(0, 0, 800, 600), new Vector2(1.25f, 1.25f))
         {
+            win = _win;
             SetSpriteOriginToMiddle();
         }
 
         public override void Update(GameTime gameTime)
         {
-            rotation += 0.01f;
+            if (win) rotation += 0.01f;
             base.Update(gameTime);
         }
 
@@ -32,15 +35,16 @@ namespace Super_Caissiere.States
         }
     }
 
-
     public class EndgameState : GameState
     {
         public bool Win { get; set; }
 
         private BackgroundVomitif backgroundVomitif;
+        private float zoomDelta;
 
         protected override void LoadContent()
         {
+            zoomDelta = 0.025f;
         }
 
         protected override void InternalLoad()
@@ -60,13 +64,23 @@ namespace Super_Caissiere.States
                 ChangeCurrentGameState = true;
                 NextGameState = Application.GameStateManager.GetGameState<HomeState>();
             }
+
+            if (Win == false)
+            {
+                SceneCamera.Zoom += zoomDelta;
+
+                if (SceneCamera.Zoom < 0.8f) zoomDelta = -zoomDelta;
+                if (SceneCamera.Zoom > 1.2f) zoomDelta = -zoomDelta;
+            }
         }
 
         public override void Draw(SuperCaissiere.Engine.Graphics.SpriteBatchProxy spriteBatch)
         {
             spriteBatch.Begin(SceneCamera);
-
             backgroundVomitif.Draw(spriteBatch);
+            spriteBatch.End();
+
+            spriteBatch.BeginNoCamera();
 
             if (Win)
             {
@@ -74,7 +88,7 @@ namespace Super_Caissiere.States
             }
             else
             {
-                spriteBatch.DrawString(Application.MagicContentManager.Font, "Vous avez échoué dans votre tâche caissière, nous ne serons jamais rencontre à nouveau", new Vector2(70, 300), Color.GhostWhite);
+                spriteBatch.DrawString(Application.MagicContentManager.Font, "Vous avez échoué dans votre tâche caisse, nous ne serons jamais rencontre à nouveau", new Vector2(40, 300), Color.GhostWhite);
             }
 
             spriteBatch.End();

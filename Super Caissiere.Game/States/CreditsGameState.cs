@@ -9,7 +9,7 @@ using SuperCaissiere.Engine.Input.Devices;
 
 namespace Super_Caissiere.States
 {
-    [TextureContent(AssetName = "background", AssetPath = "gfxs/credits/background", LoadOnStartup = true)]
+    [TextureContent(AssetName = "creditsbg", AssetPath = "gfxs/credits/background", LoadOnStartup = true)]
     public class CreditsGameState : GameState
     {
         private bool shakeshakeshake;
@@ -46,7 +46,7 @@ namespace Super_Caissiere.States
         {
             spriteBatch.Begin(SceneCamera);
 
-            spriteBatch.Draw(Application.MagicContentManager.GetTexture("background"), SceneCamera.VisibilityRectangle, Color.White);
+            spriteBatch.Draw(Application.MagicContentManager.GetTexture("creditsbg"), SceneCamera.VisibilityRectangle, Color.White);
 
             spriteBatch.DrawString(Application.MagicContentManager.Font, "RESPONSABLES", new Vector2(100, 150), Color.Cornsilk);
             spriteBatch.DrawString(Application.MagicContentManager.Font, "Lapinou Fou - programmateur informatique", new Vector2(100, 200), Color.LightSteelBlue);
