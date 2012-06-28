@@ -80,7 +80,7 @@ namespace Super_Caissiere.States
 
             // Gestion entrées joueur
             handleInput();
-            
+
             base.Update(gameTime);
         }
 
@@ -91,15 +91,12 @@ namespace Super_Caissiere.States
 
             //ici on fait tourner les serviettes :3
             m_render.resetRotate();
-            /**
-             * TODO ->mettre des directions
-             * 
-             **/       
-            if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.LB).IsDown) m_render.rotateX(-0.05f); //up
-            if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.LB).IsDown) m_render.rotateX(0.05f); //down
-            if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.LB).IsDown) m_render.rotateY(-0.05f); //left
-            if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.LB).IsDown) m_render.rotateY(0.05f);  //right
-            
+
+            if (key.ThumbStickLeft.Y < 0) m_render.rotateX(-0.05f); //up
+            if (key.ThumbStickLeft.Y > 0) m_render.rotateX(0.05f); //down
+            if (key.ThumbStickLeft.X < 0) m_render.rotateY(-0.05f); //left
+            if (key.ThumbStickLeft.X > 0) m_render.rotateY(0.05f);  //right
+
             // Possible uniquement si on ne fait rien d'autre
             if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed && m_isAnimatingScanner == false)
             {

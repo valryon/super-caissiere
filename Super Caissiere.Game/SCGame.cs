@@ -24,6 +24,7 @@ namespace Super_Caissiere
             GameStateManager.RegisterGameState(new SplashscreenState());
             GameStateManager.RegisterGameState(new HomeState());
             GameStateManager.RegisterGameState(new IngameState());
+            GameStateManager.RegisterGameState(new CreditsGameState());
 
             // Register mouse
             MouseDevice mouse = new MouseDevice(SuperCaissiere.Engine.Input.LogicalPlayerIndex.One);
@@ -32,7 +33,10 @@ namespace Super_Caissiere
             //Register keyboard
             KeyboardDevice keyboard = new KeyboardDevice(SuperCaissiere.Engine.Input.LogicalPlayerIndex.One);
             keyboard.MapButton(Microsoft.Xna.Framework.Input.Keys.Space, SuperCaissiere.Engine.Input.MappingButtons.A);
+            keyboard.MapLeftThumbstick(Microsoft.Xna.Framework.Input.Keys.Up, Microsoft.Xna.Framework.Input.Keys.Down, Microsoft.Xna.Framework.Input.Keys.Left, Microsoft.Xna.Framework.Input.Keys.Right);
+
             Application.InputManager.RegisterDevice(keyboard);
+
             // Load the first scene
             GameStateManager.LoadGameState(GameStateManager.GetGameState<SplashscreenState>());
         }

@@ -7,6 +7,7 @@ using SuperCaissiere.Engine.Content;
 using Microsoft.Xna.Framework;
 using Super_Caissiere.SpecialEffects;
 using SuperCaissiere.Engine.Utils;
+using SuperCaissiere.Engine.Input.Devices;
 
 namespace Super_Caissiere.States
 {
@@ -23,6 +24,7 @@ namespace Super_Caissiere.States
         private int m_selectedOption = 0;
 
         private bool m_isAnimationCompleted;
+        private bool m_isInputResponsive;
 
         protected override void LoadContent()
         {
@@ -31,6 +33,7 @@ namespace Super_Caissiere.States
         protected override void InternalLoad()
         {
             m_isAnimationCompleted = false;
+            m_isInputResponsive = true;
 
             m_titleLoc = new Vector2(50, -200);
             m_titleDst = new Rectangle(0, -200, 600, 100);
@@ -43,8 +46,6 @@ namespace Super_Caissiere.States
 
             m_caddieLoc = new Vector2();
             m_caddieDst = new Rectangle(0, 0, 78, 82);
-
-            NextGameState = Application.GameStateManager.GetGameState<IngameState>();
 
             SceneCamera.FadeIn(20, () =>
             {
@@ -65,10 +66,7 @@ namespace Super_Caissiere.States
                                 m_sub2Loc.X = i3.Value;
                             }, (i3) =>
                             {
-                                Timer.Create(5.5f, false, (t) =>
-                                {
-                                    m_isAnimationCompleted = true;
-                                });
+                                m_isAnimationCompleted = true;
                             });
                         });
                     });
@@ -88,12 +86,56 @@ namespace Super_Caissiere.States
             m_caddieDst.X = (int)m_caddieLoc.X;
             m_caddieDst.Y = (int)m_caddieLoc.Y;
 
-            if (m_isAnimationCompleted)
+            if (m_isAnimationCompleted && m_isInputResponsive)
             {
-                ChangeCurrentGameState = true;
+                var key = Application.InputManager.GetDevice<KeyboardDevice>(SuperCaissiere.Engine.Input.LogicalPlayerIndex.One);
+                if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed)
+                {
+                    switch (m_selectedOption)
+                    {
+                        case 0:
+                            NextGameState = Application.GameStateManager.GetGameState<IngameState>();
+                            ChangeCurrentGameState = true;
+                            break;
+
+                        case 1:
+                            NextGameState = Application.GameStateManager.GetGameState<CreditsGameState>();
+                            ChangeCurrentGameState = true;
+                            break;
+
+                        case 2:
+                            Application.Quit();
+                            break;
+                    }
+                    disableInputFOrAWhile();
+                }
+
+                if (key.ThumbStickLeft.Y < 0)
+                {
+                    m_selectedOption--;
+                    disableInputFOrAWhile();
+                    
+                }
+                else if (key.ThumbStickLeft.Y > 0)
+                {
+                    m_selectedOption++;
+                    disableInputFOrAWhile();
+                }
+
+                m_selectedOption = (int)MathHelper.Clamp(m_selectedOption, 0, 2);
+
             }
 
             base.Update(gameTime);
+        }
+
+        private void disableInputFOrAWhile()
+        {
+            m_isInputResponsive = false;
+            Timer.Create(1f, false, (t) =>
+            {
+                m_isInputResponsive = true;
+            });
         }
 
         public override void Draw(SuperCaissiere.Engine.Graphics.SpriteBatchProxy spriteBatch)
@@ -105,6 +147,13 @@ namespace Super_Caissiere.States
             spriteBatch.Draw(Application.MagicContentManager.GetTexture("title"), m_titleDst, Color.White);
             spriteBatch.Draw(Application.MagicContentManager.GetTexture("subtitle1"), m_sub1Dst, Color.White);
             spriteBatch.Draw(Application.MagicContentManager.GetTexture("subtitle2"), m_sub2Dst, Color.White);
+
+            if (m_isAnimationCompleted)
+            {
+                spriteBatch.DrawString(Application.MagicContentManager.Font, "Jeu nouveau", new Vector2(70, 300), (m_selectedOption == 0 ? Color.Chartreuse : Color.Blue));
+                spriteBatch.DrawString(Application.MagicContentManager.Font, "Responsables", new Vector2(70, 330), (m_selectedOption == 1 ? Color.Chartreuse : Color.Blue));
+                spriteBatch.DrawString(Application.MagicContentManager.Font, "Partir", new Vector2(70, 360), (m_selectedOption == 2 ? Color.Chartreuse : Color.Blue));
+            }
 
             spriteBatch.End();
         }
