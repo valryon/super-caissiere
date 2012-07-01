@@ -1735,7 +1735,7 @@ Objects:  {
 		}
 		UseMipMap: 0
 		Filename: "TEXTURElimonade.png"
-		RelativeFilename: "D:\Users\Thibault_2\Dropbox\Decidatron3000\3DModel\bottle\TEXTURElimonade.png"
+		RelativeFilename: "TEXTURElimonade.png"
 	}
 	Texture: "Texture::TEXTURElimonade_png", "TextureVideoClip" {
 		Type: "TextureVideoClip"
@@ -1760,7 +1760,7 @@ Objects:  {
 		}
 		Media: "Video::TEXTURElimonade_png"
 		FileName: "TEXTURElimonade.png"
-		RelativeFilename: "D:\Users\Thibault_2\Dropbox\Decidatron3000\3DModel\bottle\TEXTURElimonade.png"
+		RelativeFilename: "TEXTURElimonade.png"
 		ModelUVTranslation: 0,0
 		ModelUVScaling: 1,1
 		Texture_Alpha_Source: "None"
