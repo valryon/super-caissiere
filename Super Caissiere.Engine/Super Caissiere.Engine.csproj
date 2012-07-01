@@ -129,6 +129,7 @@
     <Compile Include="Score\ScoreLine.cs" />
     <Compile Include="Script\Command.cs" />
     <Compile Include="Script\ScriptManager.cs" />
+    <Compile Include="UI\TextBox.cs" />
     <Compile Include="Util\FpsCounter.cs" />
     <Compile Include="Util\InterpolatorsAndTimers.cs" />
     <Compile Include="Util\Pool.cs" />
@@ -142,9 +143,7 @@
   <ItemGroup>
     <None Include="Lapins.Engine.cd" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="UI\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
   <!--

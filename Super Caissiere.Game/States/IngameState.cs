@@ -11,10 +11,12 @@ using SuperCaissiere.Engine.Utils;
 using SuperCaissiere.Engine.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using SuperCaissiere.Engine.Content;
+using SuperCaissiere.Engine.UI;
 
 namespace Super_Caissiere.States
 {
     [TextureContent(AssetName = "ingamebg", AssetPath = "gfxs/ingame/background", LoadOnStartup = true)]
+    [TextureContent(AssetName = "boss", AssetPath = "gfxs/sprites/boss", LoadOnStartup = true)]
     [TextureContent(AssetName = "ingamebgpause", AssetPath = "gfxs/ingame/background_pause", LoadOnStartup = true)]
     public class IngameState : GameState
     {
@@ -27,10 +29,19 @@ namespace Super_Caissiere.States
         private bool m_clientProductsAnimationComplete;
         private bool m_isAnimatingScanner;
         private Rectangle m_scannerZone;
+        private Rectangle m_bossZone;
         private float m_scannerColor;
         private Interpolator m_scannerInterpolator;
         private ClientBasket m_basket;
         private Model3DRenderer m_render;
+        private BarCodeQTE m_barCodeQte;
+        private int m_scanTime;
+        private TextBox m_textbox;
+
+        private bool m_manualMode = false;
+
+        private bool m_scanning = false;
+        private float m_timerScan;
 
         private bool m_ending;
         private int m_hp;
@@ -54,67 +65,88 @@ namespace Super_Caissiere.States
             view = Matrix.CreateLookAt(new Vector3(0, 0, 5), Vector3.Zero, Vector3.Up);
             projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, Application.Graphics.GraphicsDevice.Viewport.AspectRatio, 1, 10);
             m_render = new Model3DRenderer(Application.Graphics.GraphicsDevice, Application.SpriteBatch, projection, view, world);
-
+            //m_barCodeQte = new BarCodeQTE(
             m_ending = false;
             m_pauseMidi = false;
             m_pauseMidiAnimation = false;
-
+            m_bossZone = new Rectangle(Application.Graphics.GraphicsDevice.Viewport.Width - 80, 30, 80, 120);
             SceneCamera.FadeOut(40, null, Color.Chocolate);
+            m_barCodeQte = new BarCodeQTE();
         }
 
         public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
         {
-            // Mise à jour du temps
-            float delta = 3;
-            delta = 1; // DEBUG
-            m_time = m_time.AddMinutes(gameTime.ElapsedGameTime.TotalSeconds * delta);
-            m_render.Update(gameTime);
-            if (m_pauseMidi == false)
+            if (m_textbox == null)
             {
-                // Mise à jour des entités
-                m_cashier.Update(gameTime);
-                m_hand.Update(gameTime);
-                m_basket.Update(gameTime);
+                // Mise à jour du temps
+                float delta = 3;
+                delta = 1; // DEBUG
+                m_time = m_time.AddMinutes(gameTime.ElapsedGameTime.TotalSeconds * delta);
+
+                if (m_scanning) m_timerScan += gameTime.ElapsedGameTime.Milliseconds;
+               
                 m_render.Update(gameTime);
-
-                // Ajouter un client s'il n'y en a plus
-                if (m_clientList.FirstOrDefault() == null)
+                if (m_pauseMidi == false)
                 {
-                    m_clientList.Enqueue(new Client(new Vector2(500, 170), new Vector2(500, 450)));
-                }
+                    // Mise à jour des entités
+                    m_cashier.Update(gameTime);
+                    m_hand.Update(gameTime);
+                    m_basket.Update(gameTime);
 
-                foreach (Client cli in m_clientList.ToList())
-                {
-                    cli.Update(gameTime);
-                    foreach (Product produits in cli.Items.ToList())
+                    if (m_currentProduct != null)
                     {
-                        produits.Update(gameTime);
+                        if (!m_manualMode)
+                            m_render.Update(gameTime);
+                        else
+                            m_barCodeQte.Update(gameTime);
+                    }
+                    // Ajouter un client s'il n'y en a plus
+                    if (m_clientList.FirstOrDefault() == null)
+                    {
+                        m_clientList.Enqueue(new Client(new Vector2(500, 170), new Vector2(500, 450)));
+                    }
+
+                    foreach (Client cli in m_clientList.ToList())
+                    {
+                        cli.Update(gameTime);
+                        foreach (Product produits in cli.Items.ToList())
+                        {
+                            produits.Update(gameTime);
+                        }
+                    }
+
+                    manageEnd();
+
+                    // Gestion entrées joueur
+                    handleInput();
+                }
+                // Pause du midi
+                else
+                {
+                    if (m_time.Hour > 13)
+                    {
+                        if (m_pauseMidiAnimation)
+                        {
+                            m_pauseMidiAnimation = false;
+
+                            SceneCamera.FadeIn(30, () =>
+                            {
+                                m_pauseMidi = false;
+                                SceneCamera.FadeOut(30, null, Color.White);
+                            }, Color.HotPink);
+                        }
                     }
                 }
 
-                manageEnd();
-
-                // Gestion entrées joueur
-                handleInput();
             }
-            // Pause du midi
             else
             {
-                if (m_time.Hour > 13)
-                {
-                    if (m_pauseMidiAnimation)
-                    {
-                        m_pauseMidiAnimation = false;
+                m_textbox.Update(gameTime);
+                var key = Application.InputManager.GetDevice<KeyboardDevice>(SuperCaissiere.Engine.Input.LogicalPlayerIndex.One);
+                if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed)
+                    m_textbox = null;
 
-                        SceneCamera.FadeIn(30, () =>
-                        {
-                            m_pauseMidi = false;
-                            SceneCamera.FadeOut(30, null, Color.White);
-                        }, Color.HotPink);
-                    }
-                }
             }
-
             base.Update(gameTime);
         }
 
@@ -172,17 +204,26 @@ namespace Super_Caissiere.States
             // Appui sur espace : ACTION
             var key = Application.InputManager.GetDevice<KeyboardDevice>(SuperCaissiere.Engine.Input.LogicalPlayerIndex.One);
 
-            //ici on fait tourner les serviettes :3
-            m_render.resetRotate();
-            if (key.ThumbStickLeft.Y < 0) m_render.rotateX(-0.05f); //up
-            if (key.ThumbStickLeft.Y > 0) m_render.rotateX(0.05f); //down
-            if (key.ThumbStickLeft.X < 0) m_render.rotateY(-0.05f); //left
-            if (key.ThumbStickLeft.X > 0) m_render.rotateY(0.05f);  //right
+            if (m_scanning && !m_barCodeQte.isActive() && key.GetState(SuperCaissiere.Engine.Input.MappingButtons.B).IsPressed)
+            {
+                m_manualMode = true;
+                m_barCodeQte.start();
+            }
 
-            if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsDown) m_hp--;
+            if (m_scanning)
+            {
+                //ici on fait tourner les serviettes :3
+                m_render.resetRotate();
+                if (key.ThumbStickLeft.Y < 0) m_render.rotateX(-0.05f); //up
+                if (key.ThumbStickLeft.Y > 0) m_render.rotateX(0.05f); //down
+                if (key.ThumbStickLeft.X < 0) m_render.rotateY(-0.05f); //left
+                if (key.ThumbStickLeft.X > 0) m_render.rotateY(0.05f);  //right
+            }
+            if (m_textbox == null)
+                if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed) m_hp--;
 
             // Possible uniquement si on ne fait rien d'autre
-            if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed && m_isAnimatingScanner == false)
+            if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed && !m_render.isActive)
             {
                 // Pas de produit devant le joueur : on en met un
                 if (m_currentProduct == null)
@@ -205,6 +246,10 @@ namespace Super_Caissiere.States
                                     t.Stop();
                                     m_render.setModel(m_currentProduct.getModel(), m_currentProduct.getCollider());
                                     m_render.isActive = true;
+                                    m_manualMode = false;
+                                    m_scanTime = 0;
+                                    m_scanning = true;
+                                    m_timerScan = 0;
                                 }
                             }));
                         }
@@ -227,7 +272,6 @@ namespace Super_Caissiere.States
                                         t.Stop();
                                         m_clientProductsAnimationComplete = true;
                                     }
-
                                 }
                             }
                         }));
@@ -236,18 +280,37 @@ namespace Super_Caissiere.States
             }
 
             // Clic sur la souris = SCAN
-            var mouse = Application.InputManager.GetDevice<MouseDevice>(SuperCaissiere.Engine.Input.LogicalPlayerIndex.One);
-            if (m_render.isActive && mouse.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed)
+            if (m_scanning)
             {
-                
-                if (m_render.isClicked((int)mouse.MouseLocation.X, (int)mouse.MouseLocation.Y))
+                var mouse = Application.InputManager.GetDevice<MouseDevice>(SuperCaissiere.Engine.Input.LogicalPlayerIndex.One);
+                bool validate = false;
+                if (mouse.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed)
+                {
+                    if (m_render.isClicked((int)mouse.MouseLocation.X, (int)mouse.MouseLocation.Y))
+                    {
+                        m_scanTime++;
+                        if (m_scanTime > 10)
+                        {
+                            m_textbox = new TextBox("Astus:\n Ce code bare semble être corrompu, presser \n'Ctrl' pour commuté au mode manuel");
+                        }
+                        if (!m_currentProduct.IsCorrupted) validate = true;
+                    }
+                }
+                else if (m_manualMode &&  m_barCodeQte.isValidated)
+                {
+                    validate = true;
+                }
+
+                if (validate)
                 {
                     Console.Beep();
+                    m_scanning = false;
+                    displayRank(m_timerScan);
+
                     Timer.Create(0.02F, true, (t =>
                     {
                         // Déplacement du produit dans le panier final
                         m_currentProduct.Location += new Vector2(-5, 0);
-
                         if (m_currentProduct.Location.X < 100)
                         {
                             t.Stop();
@@ -255,65 +318,45 @@ namespace Super_Caissiere.States
                             m_basket.AddItem(m_currentProduct);
                             m_clientList.First().Items.Dequeue();
                             m_currentProduct = null;
-
+                            m_scanTime = 0;
                         }
                     }));
                     m_render.isActive = false;
-
                 }
-
             }
-           /*
-            if (mouse.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed)
-            {
-                // On regarde s'il y a collision
-                m_scannerColor = 1;
-                int larg = 50;
-                int haut = 100;
-
-                m_scannerZone = new Rectangle(m_hand.DstRect.Left + larg, m_hand.DstRect.Top + haut, m_hand.DstRect.Width - (larg * 2), m_hand.DstRect.Height - (haut * 2));
-
-                // Avec le produit courant
-                if (m_currentProduct != null)
-                {
-                    if (m_scannerZone.Intersects(m_currentProduct.DstRect))
-                    {
-                        // Collision
-                        m_isAnimatingScanner = true;
-
-                        Timer.Create(0.02F, true, (t =>
-                        {
-                            // Déplacement du produit dans le panier final
-                            m_currentProduct.Location += new Vector2(-5, 0);
-
-                            if (m_currentProduct.Location.X < 100)
-                            {
-                                t.Stop();
-                                m_isAnimatingScanner = false;
-                                m_basket.AddItem(m_currentProduct);
-                                m_clientList.First().Items.Dequeue();
-                                m_currentProduct = null;
-
-                            }
-                        }));
-                    }
-                }
-           
-                // Animation du scanner
-                if (m_scannerInterpolator != null)
-                {
-                    m_scannerInterpolator.Stop();
-                    m_scannerInterpolator = null;
-                }
-                m_scannerInterpolator = Interpolator.Create(1.0F, 0F, 0.35F, (i =>
-                {
-                    m_scannerColor = i.Value;
-                }), (i =>
-                {
-                    m_scannerZone = Rectangle.Empty;
-                }));
-            }*/
         }
+
+        private void displayRank(float _time)
+        {
+            int d = 0;
+            if (_time < 500)
+            {
+                d = 10;
+            }
+            else if (_time < 1000)
+            {
+                d = 5;
+            }
+            else if (_time < 2000)
+            {
+                d = 0;
+            }
+            else if (_time < 3000)
+            {
+                d = -5;
+            }
+            else if (_time < 5000)
+            {
+                d = -10;
+            }
+            else
+            {
+                d = -20;
+            }
+            m_hp += d;
+
+        }
+
 
         public override void Draw(SuperCaissiere.Engine.Graphics.SpriteBatchProxy spriteBatch)
         {
@@ -335,19 +378,29 @@ namespace Super_Caissiere.States
                 foreach (Client cli in m_clientList.ToList())
                 {
                     var list = cli.Items.ToList();
-                    for(int  i= list.Count;i>0; i--){
-                        list[i-1].Draw(spriteBatch);
+                    for (int i = list.Count; i > 0; i--)
+                    {
+                        list[i - 1].Draw(spriteBatch);
                     }
                 }
 
                 // Le panier
                 m_basket.Draw(spriteBatch);
-                spriteBatch.End();
+
                 //draw models3D
-
-                m_render.Draw();
-
-                spriteBatch.Begin(SceneCamera);
+                if (m_currentProduct != null)
+                {
+                    if (!m_manualMode)
+                    {
+                        spriteBatch.End();
+                        m_render.Draw();
+                        spriteBatch.Begin(SceneCamera);
+                    }
+                    else
+                    {
+                        m_barCodeQte.Draw(spriteBatch);
+                    }
+                }
 
                 // La main en dernier
                 m_hand.Draw(spriteBatch);
@@ -369,8 +422,16 @@ namespace Super_Caissiere.States
                 if (m_hp < 30) color = Color.PowderBlue;
                 if (m_hp < 20) color = Color.MintCream;
                 if (m_hp < 10) color = Color.Black;
+                int d = 0;
+                if (m_hp < 70) d = 1;
+                if (m_hp < 30) d = 2;
+                spriteBatch.DrawString(Application.MagicContentManager.Font, "Bonheur de patron : " + m_hp + " %", new Vector2(Application.Graphics.GraphicsDevice.Viewport.Width - 230, 5), color);
+                Rectangle r = new Rectangle(d * 133, 0, 133, 200);
 
-                spriteBatch.DrawString(Application.MagicContentManager.Font, "Patron niveau bohneur : " + m_hp + " %", new Vector2(10, 30), color);
+                spriteBatch.Draw(Application.MagicContentManager.GetTexture("boss"), m_bossZone, r, Color.White);
+                int size = (int)((m_hp / 100f) * 120f);
+                spriteBatch.DrawRectangle(new Rectangle(Application.Graphics.GraphicsDevice.Viewport.Width - 100, 150 - size, 10, size), color);
+
             }
             // Pause du midi
             else
@@ -379,7 +440,7 @@ namespace Super_Caissiere.States
             }
 
             spriteBatch.DrawString(Application.MagicContentManager.Font, m_time.ToString(), new Vector2(10, 10), Color.Chartreuse);
-
+            if (m_textbox != null) m_textbox.Draw(spriteBatch);
             spriteBatch.End();
 
         }

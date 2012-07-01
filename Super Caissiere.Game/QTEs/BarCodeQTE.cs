@@ -5,6 +5,12 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using SuperCaissiere.Engine.Content;
+using SuperCaissiere.Engine.Graphics;
+
+
+
+
 
 namespace SuperCaissiere.Engine.Core
 {
@@ -16,6 +22,8 @@ namespace SuperCaissiere.Engine.Core
         ACTIVE,
     };
 
+    [TextureContent(AssetName = "barcode", AssetPath = "gfxs/sprites/code_barre", LoadOnStartup = false)]
+    [FontContent(AssetName = "barcode", AssetPath = "gfxs/sprites/code_barre", LoadOnStartup = false)]
     public class BarCodeQTE
     {
 
@@ -43,16 +51,23 @@ namespace SuperCaissiere.Engine.Core
         private STATE currentState;
         private bool blink;
 
-        public BarCodeQTE(int _x, int _y, int _w, int _h, Texture2D _tex, Texture2D _null, SpriteFont _font)
+        public BarCodeQTE()
         {
+
+            
             currentState = STATE.INACTIVE;
-            font = _font;
+            font = Application.MagicContentManager.Font;
             randomizator = new Random((int)System.DateTime.Now.Ticks);
+
+            barcodeDigits = new int[BARCODE_LENGTH];
+            barcodeTex = Application.MagicContentManager.GetTexture("barcode");
+            nullTex = Application.MagicContentManager.EmptyTexture;
+            int _w=barcodeTex.Width;
+            int _h=barcodeTex.Height;
+            int _x=(Application.Graphics.GraphicsDevice.Viewport.Width-_w)/2;
+            int _y = (Application.Graphics.GraphicsDevice.Viewport.Height - _h) / 2;
             position = new Vector2(_x, _y);
             size = new Vector2(_w, _h);
-            barcodeDigits = new int[BARCODE_LENGTH];
-            barcodeTex = _tex;
-            nullTex = _null;
             _dstRect = new Rectangle(_x, _y, _w, _h);
         }
 
@@ -71,6 +86,7 @@ namespace SuperCaissiere.Engine.Core
 
         public void start()
         {
+            Console.WriteLine("START QTE");
             generateBarCode();
             isValidated = false;
             changeStateTo(STATE.ACTIVE);
@@ -204,7 +220,7 @@ namespace SuperCaissiere.Engine.Core
         }
 
 
-        public void Draw(SpriteBatch spritebatch)
+        public void Draw(SpriteBatchProxy spritebatch)
         {
             if (currentState == STATE.INACTIVE) return;
             Rectangle rect = _dstRect;

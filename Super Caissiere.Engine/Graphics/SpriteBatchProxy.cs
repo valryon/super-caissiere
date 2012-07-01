@@ -28,7 +28,7 @@ namespace SuperCaissiere.Engine.Graphics
 
         #region Useful methods
 
-        /// <summary>
+        /// <summary> 
         /// Draw a given rectangle in the specified color
         /// </summary>
         /// <param name="rect"></param>

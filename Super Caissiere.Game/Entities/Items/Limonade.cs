@@ -9,11 +9,11 @@ namespace Super_Caissiere.Entities.Items
 {
     [TextureContent(AssetName = "limonade", AssetPath = "gfxs/sprites/limonade", LoadOnStartup = false)]
     [Model3DContent(AssetName = "limonade_mod", AssetPath = "models/limonade", LoadOnStartup = false)]
-    [Model3DContent(AssetName = "limonade_col", AssetPath = "models/limonade", LoadOnStartup = false)]
+    [Model3DContent(AssetName = "limonade_col", AssetPath = "models/limonade_col", LoadOnStartup = false)]
     public class Limonade : Product
     {
         public Limonade()
-            : base("limonade", new Microsoft.Xna.Framework.Rectangle(0, 0, 128, 128), "limonade_mod", "limonade_col")
+            : base("limonade", new Microsoft.Xna.Framework.Rectangle(0, 0, 95, 200), "limonade_mod", "limonade_col")
         {
             hitbox = new Hitbox(DstRect);
             SetSpriteOriginToMiddle();
@@ -31,7 +31,7 @@ namespace Super_Caissiere.Entities.Items
 
         public override float Price
         {
-            get { return 2.99f; }
+            get { return 1.45f; }
         }
     }
 }

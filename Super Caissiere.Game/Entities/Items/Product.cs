@@ -12,14 +12,14 @@ namespace Super_Caissiere.Entities.Items
     public abstract class Product : Entity
     {
         string m_model, m_collider;
-        public bool isCorrupted;
+        public bool IsCorrupted{get; set;}
 
         public Product(string assetName, Rectangle src, string model_name, string collider_name)
             : base(assetName, Vector2.Zero, src, Vector2.One)
         {
             m_model = model_name;
             m_collider = collider_name;
-            isCorrupted = (Application.Random.GetRandomFloat(0, 1) > 0.8f);
+            IsCorrupted = (Application.Random.GetRandomFloat(0, 1) > 0.8f);
         }
 
         public abstract float Price

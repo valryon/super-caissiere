@@ -10,8 +10,18 @@ using Super_Caissiere.Entities.Items;
 
 namespace Super_Caissiere.Entities
 {
+
+   
+
+
     public class Client : Entity
     {
+
+        public static string[] client_event = {   "Bonjour,\n quel mauvais temps aujourd'hui!" ,
+                                                  ""
+                                              };
+
+
         private Queue<Product> m_items;
         private ClientBody body;
         private ClientHead head;
@@ -34,6 +44,7 @@ namespace Super_Caissiere.Entities
             {
                 var item = Product.GetRandomItem();
                 item.Location = location_produit+delta;
+                item.Location += new Vector2(0,Application.Random.GetRandomInt(-10, 10));
                 m_items.Enqueue(item);
                 delta += new Vector2(90, 0);
             }
