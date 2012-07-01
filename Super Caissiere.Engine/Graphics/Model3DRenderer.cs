@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SuperCaissiere.Engine.Core;
 
 
 namespace SuperCaissiere.Engine.Graphics
@@ -16,7 +17,7 @@ namespace SuperCaissiere.Engine.Graphics
         private Model model, modelcol;
         private Random randomizator;
         private float time = 0.00f;
-
+        public bool isActive { set; get; }
 
         public Model3DRenderer(GraphicsDevice _dev, SpriteBatchProxy _sprbtch, Matrix _proj, Matrix _view, Matrix _world)
         {
@@ -28,6 +29,7 @@ namespace SuperCaissiere.Engine.Graphics
             spriteBatch = _sprbtch;
             tmpTarget = new RenderTarget2D(graphicDevice, graphicDevice.Viewport.Width, graphicDevice.Viewport.Height);
             randomizator = new Random((int)System.DateTime.Now.Ticks);
+            isActive = false;
         }
 
         public void setModel(Model _model, Model _modelcol)
@@ -64,15 +66,16 @@ namespace SuperCaissiere.Engine.Graphics
         }
         public void Update(GameTime gameTime)
         {
+            if (!isActive) return;
             world *= Matrix.CreateRotationX(Rotation.X);
             world *= Matrix.CreateRotationY(Rotation.Y);
             world *= Matrix.CreateRotationZ(Rotation.Z);
-            time += 0.01f;
         }
 
 
         private void draw(Model _m)
         {
+            if (!isActive) return;
             if (_m == null) return;
             foreach (ModelMesh mesh in _m.Meshes)
             {
@@ -114,10 +117,10 @@ namespace SuperCaissiere.Engine.Graphics
         {
             graphicDevice.SetRenderTarget(tmpTarget);
             graphicDevice.Clear(Color.CornflowerBlue);
-            spriteBatch.Begin(null);
+            Application.SpriteBatch.BeginNoCamera();
 
             draw(modelcol);
-            spriteBatch.End();
+            Application.SpriteBatch.End();
             graphicDevice.SetRenderTarget(null);
             return tmpTarget;
         }

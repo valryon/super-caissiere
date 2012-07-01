@@ -121,6 +121,25 @@ namespace SuperCaissiere.Engine.Content
                 addContentItem(f);
             });
 
+            var models = (
+               from att in contentAttributes
+               where att is Model3DContentAttribute
+               let font = att as Model3DContentAttribute
+               select new Model3DContentItem()
+               {
+                   AssetName = font.AssetName,
+                   AssetPath = font.AssetPath,
+                   LoadOnStartup = font.LoadOnStartup
+               }
+               ).ToList();
+
+            models.ForEach(f =>
+            {
+
+                addContentItem(f);
+            });
+
+
             loadAllContent();
         }
 
@@ -128,7 +147,8 @@ namespace SuperCaissiere.Engine.Content
         {
             if (_data.Keys.Contains(ci.AssetName))
             {
-                throw new ArgumentException("Duplicated content id: " + ci.AssetName);
+                //throw new ArgumentException("Duplicated content id: " + ci.AssetName);
+                return;
             }
 
             _data.Add(ci.AssetName, ci);
@@ -181,6 +201,11 @@ namespace SuperCaissiere.Engine.Content
             {
                 var songItem = item as SongContentItem;
                 songItem.Song = _contentManager.Load<Song>(@item.AssetPath);
+            }
+            else if (item is Model3DContentItem)
+            {
+                var modelItem = item as Model3DContentItem;
+                modelItem.Model3D = _contentManager.Load<Model>(@item.AssetPath);
             }
             else
             {
@@ -238,6 +263,18 @@ namespace SuperCaissiere.Engine.Content
 
             throw new ArgumentException(id + " is not a soundeffect content item ?!");
         }
+        public Model3DContentItem GetModel(String id)
+        {
+            var item = GetContent(id);
+
+            if (item is Model3DContentItem)
+                return ((Model3DContentItem)item);
+
+            throw new ArgumentException(id + " is not a model content item ?!");
+        }
+
+
+
 
         /// <summary>
         /// Retrieve a music from its ID

@@ -14,13 +14,14 @@ namespace Super_Caissiere.Entities
     public class Hand : Entity
     {
         public Hand()
-            : base("hand", new Vector2(150, 150), new Rectangle(0, 0, 256, 256), Vector2.One)
+            : base("hand", new Vector2(150, 150), new Rectangle(0, 0, 256, 512), Vector2.One)
         { }
 
         public override void Update(GameTime gameTime)
         {
             var mouse = Application.InputManager.GetDevice<MouseDevice>(SuperCaissiere.Engine.Input.LogicalPlayerIndex.One);
-            Location = (new Vector2(mouse.MouseLocation.X, mouse.MouseLocation.Y) - new Vector2(DstRect.Width / 2, DstRect.Height / 2));
+            if(mouse.MouseLocation.Y>Application.Graphics.GraphicsDevice.Viewport.Height-(512-33))
+                Location = (new Vector2(mouse.MouseLocation.X, mouse.MouseLocation.Y) - new Vector2(27, 33));
 
             base.Update(gameTime);
         }

@@ -66,9 +66,9 @@ namespace Super_Caissiere.States
         {
             // Mise à jour du temps
             float delta = 3;
-            delta = 20; // DEBUG
+            delta = 1; // DEBUG
             m_time = m_time.AddMinutes(gameTime.ElapsedGameTime.TotalSeconds * delta);
-
+            m_render.Update(gameTime);
             if (m_pauseMidi == false)
             {
                 // Mise à jour des entités
@@ -80,7 +80,7 @@ namespace Super_Caissiere.States
                 // Ajouter un client s'il n'y en a plus
                 if (m_clientList.FirstOrDefault() == null)
                 {
-                    m_clientList.Enqueue(new Client(new Vector2(500, 170), new Vector2(500, 400)));
+                    m_clientList.Enqueue(new Client(new Vector2(500, 170), new Vector2(500, 450)));
                 }
 
                 foreach (Client cli in m_clientList.ToList())
@@ -174,7 +174,6 @@ namespace Super_Caissiere.States
 
             //ici on fait tourner les serviettes :3
             m_render.resetRotate();
-
             if (key.ThumbStickLeft.Y < 0) m_render.rotateX(-0.05f); //up
             if (key.ThumbStickLeft.Y > 0) m_render.rotateX(0.05f); //down
             if (key.ThumbStickLeft.X < 0) m_render.rotateY(-0.05f); //left
@@ -204,6 +203,8 @@ namespace Super_Caissiere.States
                                 if (m_currentProduct.Location.X < 300)
                                 {
                                     t.Stop();
+                                    m_render.setModel(m_currentProduct.getModel(), m_currentProduct.getCollider());
+                                    m_render.isActive = true;
                                 }
                             }));
                         }
@@ -236,6 +237,33 @@ namespace Super_Caissiere.States
 
             // Clic sur la souris = SCAN
             var mouse = Application.InputManager.GetDevice<MouseDevice>(SuperCaissiere.Engine.Input.LogicalPlayerIndex.One);
+            if (m_render.isActive && mouse.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed)
+            {
+                
+                if (m_render.isClicked((int)mouse.MouseLocation.X, (int)mouse.MouseLocation.Y))
+                {
+                    Console.Beep();
+                    Timer.Create(0.02F, true, (t =>
+                    {
+                        // Déplacement du produit dans le panier final
+                        m_currentProduct.Location += new Vector2(-5, 0);
+
+                        if (m_currentProduct.Location.X < 100)
+                        {
+                            t.Stop();
+                            m_isAnimatingScanner = false;
+                            m_basket.AddItem(m_currentProduct);
+                            m_clientList.First().Items.Dequeue();
+                            m_currentProduct = null;
+
+                        }
+                    }));
+                    m_render.isActive = false;
+
+                }
+
+            }
+           /*
             if (mouse.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed)
             {
                 // On regarde s'il y a collision
@@ -270,7 +298,7 @@ namespace Super_Caissiere.States
                         }));
                     }
                 }
-
+           
                 // Animation du scanner
                 if (m_scannerInterpolator != null)
                 {
@@ -284,7 +312,7 @@ namespace Super_Caissiere.States
                 {
                     m_scannerZone = Rectangle.Empty;
                 }));
-            }
+            }*/
         }
 
         public override void Draw(SuperCaissiere.Engine.Graphics.SpriteBatchProxy spriteBatch)
@@ -306,15 +334,20 @@ namespace Super_Caissiere.States
 
                 foreach (Client cli in m_clientList.ToList())
                 {
-                    foreach (Product produits in cli.Items.ToList())
-                    {
-                        produits.Draw(spriteBatch);
+                    var list = cli.Items.ToList();
+                    for(int  i= list.Count;i>0; i--){
+                        list[i-1].Draw(spriteBatch);
                     }
                 }
 
                 // Le panier
                 m_basket.Draw(spriteBatch);
+                spriteBatch.End();
+                //draw models3D
 
+                m_render.Draw();
+
+                spriteBatch.Begin(SceneCamera);
 
                 // La main en dernier
                 m_hand.Draw(spriteBatch);
@@ -348,6 +381,7 @@ namespace Super_Caissiere.States
             spriteBatch.DrawString(Application.MagicContentManager.Font, m_time.ToString(), new Vector2(10, 10), Color.Chartreuse);
 
             spriteBatch.End();
+
         }
 
         public override bool ChangeCurrentGameState

@@ -7,11 +7,13 @@ using SuperCaissiere.Engine.Physics;
 
 namespace Super_Caissiere.Entities.Items
 {
-    [TextureContent(AssetName = "cassoulet", AssetPath = "gfxs/sprites/cassoulet", LoadOnStartup = false)]
-    public class Cassoulet : Product
+    [TextureContent(AssetName = "cereales", AssetPath = "gfxs/sprites/cereales", LoadOnStartup = false)]
+    [Model3DContent(AssetName = "cereales_mod", AssetPath = "models/cereals", LoadOnStartup = false)]
+    [Model3DContent(AssetName = "cereales_col", AssetPath = "models/cereals_col", LoadOnStartup = false)]
+    public class Cereales : Product
     {
-        public Cassoulet()
-            : base("cassoulet", new Microsoft.Xna.Framework.Rectangle(0, 0, 92, 128))
+        public Cereales()
+            : base("cereales", new Microsoft.Xna.Framework.Rectangle(0, 0, 130, 190), "cereales_mod", "cereales_col")
         {
             hitbox = new Hitbox(DstRect);
             SetSpriteOriginToMiddle();
@@ -24,7 +26,7 @@ namespace Super_Caissiere.Entities.Items
 
         public override SuperCaissiere.Engine.World.Entity Clone()
         {
-            return new Cassoulet();
+            return new Cereales();
         }
 
         public override float Price

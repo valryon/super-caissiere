@@ -13,12 +13,15 @@ namespace Super_Caissiere
     public class SCGame : Application
     {
         public SCGame()
-            : base("Super Caissière !", "Content", "1.0")
+            : base("Monique passion hotesse de caisse !", "Content", "1.0")
         { }
 
         protected override void Initialize()
         {
             base.Initialize();
+
+            //debug 
+            //this.IsMouseVisible = true;
 
             // Game states
             GameStateManager.RegisterGameState(new SplashscreenState());

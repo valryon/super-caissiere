@@ -7,11 +7,13 @@ using SuperCaissiere.Engine.Physics;
 
 namespace Super_Caissiere.Entities.Items
 {
-    [TextureContent(AssetName = "cacolac", AssetPath = "gfxs/sprites/cacolac", LoadOnStartup = false)]
-    public class Cacolac : Product
+    [TextureContent(AssetName = "limonade", AssetPath = "gfxs/sprites/limonade", LoadOnStartup = false)]
+    [Model3DContent(AssetName = "limonade_mod", AssetPath = "models/limonade", LoadOnStartup = false)]
+    [Model3DContent(AssetName = "limonade_col", AssetPath = "models/limonade", LoadOnStartup = false)]
+    public class Limonade : Product
     {
-        public Cacolac()
-            : base("cacolac", new Microsoft.Xna.Framework.Rectangle(0, 0, 128, 128))
+        public Limonade()
+            : base("limonade", new Microsoft.Xna.Framework.Rectangle(0, 0, 128, 128), "limonade_mod", "limonade_col")
         {
             hitbox = new Hitbox(DstRect);
             SetSpriteOriginToMiddle();
@@ -24,7 +26,7 @@ namespace Super_Caissiere.Entities.Items
 
         public override SuperCaissiere.Engine.World.Entity Clone()
         {
-            return new Cacolac();
+            return new Limonade();
         }
 
         public override float Price

@@ -30,6 +30,11 @@ namespace SuperCaissiere.Engine.Content
         public Texture2D Texture { get; set; }
     }
 
+    public sealed class Model3DContentItem : ContentItem
+    {
+        public Model Model3D { get; set; }
+    }
+
     public sealed class SoundEffectContentItem : ContentItem
     {
         public SoundEffect SoundEffect { get; set; }

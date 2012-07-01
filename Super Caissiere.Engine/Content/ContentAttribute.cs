@@ -36,6 +36,11 @@ namespace SuperCaissiere.Engine.Content
     {
     }
 
+
+    public sealed class Model3DContentAttribute : ContentAttribute
+    {
+    }
+
     public sealed class SoundEffectContentAttribute : ContentAttribute
     {
     }
