@@ -200,7 +200,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="gfxs\misc\textbox.png">
+    <Compile Include="gfxs\ingame\textbox.png">
       <Name>textbox</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>

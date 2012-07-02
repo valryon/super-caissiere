@@ -27,7 +27,7 @@ namespace SuperCaissiere.Engine.Core
     public class BarCodeQTE
     {
 
-        private string[] RANK_TEXT = { "PAUVRE", "D'ACCORD", "GENTIL", "IMPRESSIONNANT" };
+        private string[] RANK_TEXT = { " ", " ", "", "" };
         private int[] POSITIONS = { 0, 105, 135, 165, 195, 255, 285, 315, 345, 375, 446 };
         public const int BARCODE_LENGTH = 10;
         private KeyboardState lastkb, kb;

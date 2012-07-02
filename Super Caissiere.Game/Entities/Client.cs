@@ -16,9 +16,9 @@ namespace Super_Caissiere.Entities
 
     public class Client : Entity
     {
-
-        public static string[] client_event = {   "Bonjour,\n quel mauvais temps aujourd'hui!" ,
-                                                  ""
+        //TODO Add text here
+        public static string[] CLIENT_EVENT = {   "Bonjour,\n quel mauvais temps aujourd'hui!" ,
+                                                  "Je vien acheté des kubor\n pour avoir un bo fécier !"
                                               };
 
 
@@ -44,7 +44,7 @@ namespace Super_Caissiere.Entities
             {
                 var item = Product.GetRandomItem();
                 item.Location = location_produit+delta;
-                item.Location += new Vector2(0,Application.Random.GetRandomInt(-10, 10));
+                item.Location += new Vector2(Application.Random.GetRandomInt(-10, 10), Application.Random.GetRandomInt(-10, 10));
                 m_items.Enqueue(item);
                 delta += new Vector2(90, 0);
             }
@@ -58,6 +58,12 @@ namespace Super_Caissiere.Entities
            
             base.Update(gameTime);
         }
+
+        public string getSentence()
+        {
+            return CLIENT_EVENT[Application.Random.GetRandomInt(CLIENT_EVENT.Length)];
+        }
+
 
         public override void Draw(SuperCaissiere.Engine.Graphics.SpriteBatchProxy spriteBatch)
         {

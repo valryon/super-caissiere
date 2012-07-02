@@ -53,7 +53,7 @@ namespace Super_Caissiere.States
             spriteBatch.DrawString(Application.MagicContentManager.Font, "Valryon - programmateur informatique", new Vector2(100, 240), Color.Fuchsia);
             spriteBatch.DrawString(Application.MagicContentManager.Font, "Yaki_ - jeu concepteur et programmateur informatique", new Vector2(100, 280), Color.Gainsboro);
             spriteBatch.DrawString(Application.MagicContentManager.Font, "Lolyan - dessinateuse", new Vector2(100, 320), Color.LightCyan);
-
+            spriteBatch.DrawString(Application.MagicContentManager.Font, "Glory - Idée de commencement", new Vector2(100, 320), Color.MediumOrchid);
             spriteBatch.End();
         }
 

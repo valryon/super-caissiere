@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using SuperCaissiere.Engine.Content;
 using SuperCaissiere.Engine.Graphics;
 using SuperCaissiere.Engine.Core;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace SuperCaissiere.Engine.UI
 {
@@ -17,7 +18,7 @@ namespace SuperCaissiere.Engine.UI
     /// </summary>
     /// 
 
-    [TextureContent(AssetName = "txtbox", AssetPath = "gfxs/misc/textbox", LoadOnStartup = false)]
+    [TextureContent(AssetName = "textbox", AssetPath = "gfxs/ingame/textbox", LoadOnStartup = true)]
     public class TextBox : ITextBox
     {
         private string m_text;
@@ -29,6 +30,7 @@ namespace SuperCaissiere.Engine.UI
         private double m_time = 0;
         public bool IsModal{get; set;}
         private int m_times = 0;
+        private Texture2D text;
 
         public TextBox(string _text, bool _modal)
         {
@@ -37,7 +39,7 @@ namespace SuperCaissiere.Engine.UI
             m_size = Application.MagicContentManager.Font.MeasureString(m_text);
             IsModal = _modal;
             m_location = new Vector2(Resolution.VirtualWidth / 2 - m_size.X / 2, Resolution.VirtualHeight / 2 - m_size.Y / 2);
-            m_skip = "Espace: fermer";
+            m_skip = "Espace";
             m_skip_size = Application.MagicContentManager.Font.MeasureString(m_skip);
         }
 
@@ -62,7 +64,7 @@ namespace SuperCaissiere.Engine.UI
 
         }
 
-        private const int MARGIN = 32;
+        private const int MARGIN = 20;
         public void Draw(SpriteBatchProxy spriteBatch)
         {
             Rectangle dst = new Rectangle((int)m_location.X - MARGIN, (int)m_location.Y - MARGIN, 16, 16);
@@ -72,7 +74,7 @@ namespace SuperCaissiere.Engine.UI
             {
                 for (int i = 0; i <= Math.Floor((double)((m_size.X + MARGIN * 2) / m_srcRect.Width)); i++)
                 {
-                    spriteBatch.Draw(Application.MagicContentManager.EmptyTexture, dst, m_srcRect, Color.White);
+                    spriteBatch.Draw(Application.MagicContentManager.GetTexture("textbox"), dst, m_srcRect, Color.White);
 
                     dst.Offset(16, 0);
 
@@ -107,13 +109,15 @@ namespace SuperCaissiere.Engine.UI
             m_srcRect.Y = 48;
 
             dst.Offset((int)(m_size.X + MARGIN * 2) - (16 + (int)m_skip_size.X + 8), -((int)m_skip_size.Y + 8));
-
-            spriteBatch.Draw(Application.MagicContentManager.EmptyTexture, dst, m_srcRect, Color.White);
-
+            if (IsModal)
+            {
+                spriteBatch.Draw(Application.MagicContentManager.GetTexture("textbox"), dst, m_srcRect, Color.White);
+                spriteBatch.DrawString(Application.MagicContentManager.Font, m_skip, dst.Location.ToVector2(), Color.YellowGreen);
+            }
             dst.Offset(16, 0);
 
-            spriteBatch.DrawString(Application.MagicContentManager.Font, m_skip, dst.Location.ToVector2(), Color.Black);
-            spriteBatch.DrawString(Application.MagicContentManager.Font, m_text, m_location, Color.Black);
+
+            spriteBatch.DrawString(Application.MagicContentManager.Font, m_text, m_location, Color.YellowGreen);
         }
 
 

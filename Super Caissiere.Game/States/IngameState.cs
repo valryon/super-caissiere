@@ -15,6 +15,8 @@ using SuperCaissiere.Engine.UI;
 
 namespace Super_Caissiere.States
 {
+
+    [TextureContent(AssetName = "textbox", AssetPath = "gfxs/ingame/textbox", LoadOnStartup = true)]
     [TextureContent(AssetName = "ingamebg", AssetPath = "gfxs/ingame/background", LoadOnStartup = true)]
     [TextureContent(AssetName = "boss", AssetPath = "gfxs/sprites/boss", LoadOnStartup = true)]
     [TextureContent(AssetName = "rank", AssetPath = "gfxs/ingame/rank", LoadOnStartup = true)]
@@ -25,19 +27,19 @@ namespace Super_Caissiere.States
         private Cashier m_cashier;
         private Hand m_hand;
         private DateTime m_time;
-        private Queue<Client> m_clientList;
         private Product m_currentProduct;
-        private bool m_clientProductsAnimationComplete;
-        private bool m_isAnimatingScanner;
-        private Rectangle m_scannerZone;
         private Rectangle m_bossZone;
-        private float m_scannerColor;
-        private Interpolator m_scannerInterpolator;
+        private Client m_currentClient;
         private ClientBasket m_basket;
         private Model3DRenderer m_render;
         private BarCodeQTE m_barCodeQte;
         private int m_scanTime;
         private TextBox m_textbox;
+
+        private int m_diagFSM;
+
+        private float m_magasinCA = 0;
+        private float m_youCA = 0;
 
         private bool m_manualMode = false;
 
@@ -51,6 +53,7 @@ namespace Super_Caissiere.States
         private int m_hp;
         private bool m_pauseMidi, m_pauseMidiAnimation;
 
+        private float m_price = 0;
         protected override void LoadContent()
         {
         }
@@ -61,7 +64,6 @@ namespace Super_Caissiere.States
 
             m_cashier = new Cashier();
             m_hand = new Hand();
-            m_clientList = new Queue<Client>();
             m_basket = new ClientBasket();
             m_time = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 9, 0, 0);
             Matrix world, view, projection;
@@ -69,7 +71,6 @@ namespace Super_Caissiere.States
             view = Matrix.CreateLookAt(new Vector3(0, 0, 5), Vector3.Zero, Vector3.Up);
             projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, Application.Graphics.GraphicsDevice.Viewport.AspectRatio, 1, 10);
             m_render = new Model3DRenderer(Application.Graphics.GraphicsDevice, Application.SpriteBatch, projection, view, world);
-            //m_barCodeQte = new BarCodeQTE(
             m_ending = false;
             m_pauseMidi = false;
             m_pauseMidiAnimation = false;
@@ -77,6 +78,11 @@ namespace Super_Caissiere.States
             SceneCamera.FadeOut(40, null, Color.Chocolate);
             m_barCodeQte = new BarCodeQTE();
             m_rank = new Rectangle(0, 0, 300, 150);
+
+            Timer.Create(1f, true, (t =>
+            {
+                m_magasinCA += Application.Random.GetRandomFloat(10, 50);
+            }));
         }
 
         public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
@@ -85,8 +91,11 @@ namespace Super_Caissiere.States
             {
                 if (m_textbox != null)
                 {
-                    
-
+                    m_textbox.Update(gameTime);
+                    if (m_textbox.isDone())
+                    {
+                        m_textbox = null;
+                    }
                 }
                 // Mise à jour du temps
                 float delta = 3;
@@ -94,7 +103,7 @@ namespace Super_Caissiere.States
                 m_time = m_time.AddMinutes(gameTime.ElapsedGameTime.TotalSeconds * delta);
 
                 if (m_scanning) m_timerScan += gameTime.ElapsedGameTime.Milliseconds;
-               
+
                 m_render.Update(gameTime);
                 if (m_pauseMidi == false)
                 {
@@ -111,19 +120,31 @@ namespace Super_Caissiere.States
                             m_barCodeQte.Update(gameTime);
                     }
                     // Ajouter un client s'il n'y en a plus
-                    if (m_clientList.FirstOrDefault() == null)
+                    if (m_currentClient == null)
                     {
-                        m_clientList.Enqueue(new Client(new Vector2(500, 50), new Vector2(500, 450)));
+                        m_currentClient = new Client(new Vector2(Application.Graphics.GraphicsDevice.Viewport.Width + 10, 50), new Vector2(Application.Graphics.GraphicsDevice.Viewport.Width - 10, 450));
+                        Timer.Create(0.02f, true, (t =>
+                            {
+                                m_currentClient.Location -= new Vector2(5, 0);
+                                m_youCA += m_price;
+                                m_price = 0;
+                                m_diagFSM = 0;
+                                if (m_currentClient.Location.X <= 500)
+                                {
+                                    t.Stop();
+                                    m_textbox = new TextBox(m_currentClient.getSentence(), false);
+
+                                }
+
+                            }));
                     }
 
-                    foreach (Client cli in m_clientList.ToList())
+                    m_currentClient.Update(gameTime);
+                    foreach (Product produits in m_currentClient.Items.ToList())
                     {
-                        cli.Update(gameTime);
-                        foreach (Product produits in cli.Items.ToList())
-                        {
-                            produits.Update(gameTime);
-                        }
+                        produits.Update(gameTime);
                     }
+
 
                     manageEnd();
 
@@ -220,6 +241,44 @@ namespace Super_Caissiere.States
                 m_barCodeQte.start();
             }
 
+            if (m_currentClient.Items.Count == 0) //okay on a passé tous les articles
+            {
+                if (m_textbox == null)
+                {
+                    if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed)
+                    {
+                        switch (m_diagFSM)
+                        {
+                            case 0: m_textbox = new TextBox("Sa fera " + m_price + "Euro s'il vous plé", true);
+                                Timer.Create(0.02f, true, (t =>
+                                {
+                                    m_currentClient.Location -= new Vector2(5, 0);
+                                    if (m_currentClient.Location.X < 100) t.Stop();
+                                }));
+                                break;
+                            case 1: m_textbox = new TextBox("Vous avez la carte du magazin?", true); break;
+                            case 2: m_textbox = new TextBox("Ayez une bonne journée", true); break;
+                            case 3: m_textbox = new TextBox("Au revoir et a bientot", true); break;
+                        }
+                        m_diagFSM++;
+                    }
+                    if (m_diagFSM == 4)
+                    {
+                        m_diagFSM++;
+                        Timer.Create(0.02f, true, (t =>
+                        {
+                            if (m_currentClient == null) t.Stop();
+                            m_currentClient.Location -= new Vector2(5, 0);
+                            if (m_currentClient.Location.X < -100)
+                            {
+                                t.Stop();
+                                m_currentClient = null;
+                            }
+                        }));
+                    }
+                }
+
+            }
             if (m_scanning)
             {
                 //ici on fait tourner les serviettes :3
@@ -229,20 +288,33 @@ namespace Super_Caissiere.States
                 if (key.ThumbStickLeft.X < 0) m_render.rotateY(-0.05f); //left
                 if (key.ThumbStickLeft.X > 0) m_render.rotateY(0.05f);  //right
             }
-            if (m_textbox == null && m_scanning)
-                if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed) m_hp--;
+
+
+            if (m_textbox == null && m_scanning) //Mallus
+                if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed)
+                {
+                    m_hp -= 5;
+                    SceneCamera.ShakeFactor = Vector2.One * 5;
+                    SceneCamera.ShakeSpeed = Vector2.One * 2;
+                    Timer.Create(0.5f, false, (t =>
+                    {
+                        SceneCamera.ShakeFactor = Vector2.Zero;
+                        SceneCamera.ShakeSpeed = Vector2.Zero;
+                    }));
+                }
+
 
             // Possible uniquement si on ne fait rien d'autre
-            if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsDown )
+            if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsDown)
             {
                 if (m_currentProduct == null)
                 {
-                    var firstClient = m_clientList.FirstOrDefault();
-                    if (firstClient != null)
+
+                    if (m_currentClient != null)
                     {
-                        foreach (Product p in firstClient.Items)
+                        foreach (Product p in m_currentClient.Items)
                         {
-                            p.Location+=new Vector2(-2,0);
+                            p.Location += new Vector2(-2, 0);
                             if (p.Location.X < 450)
                             {
                                 m_currentProduct = p;
@@ -265,8 +337,8 @@ namespace Super_Caissiere.States
                         }
                     }
                 }
-                
-               
+
+
             }
 
             // Clic sur la souris = SCAN
@@ -281,12 +353,12 @@ namespace Super_Caissiere.States
                         m_scanTime++;
                         if (m_scanTime > 10)
                         {
-                            m_textbox = new TextBox("Astus:\n Ce code bare semble être corrompu, presser \n'Ctrl' pour commuté au mode manuel", true);
+                            m_textbox = new TextBox("Caisse centrale dit:\n Ce code bare semble être corrompu, presser \n'Ctrl' pour commuté au mode manuel", true);
                         }
                         if (!m_currentProduct.IsCorrupted) validate = true;
                     }
                 }
-                else if (m_manualMode &&  m_barCodeQte.isValidated)
+                else if (m_manualMode && m_barCodeQte.isValidated)
                 {
                     validate = true;
                 }
@@ -296,17 +368,16 @@ namespace Super_Caissiere.States
                     Console.Beep();
                     m_scanning = false;
                     displayRank(m_timerScan);
-
+                    m_price += m_currentProduct.Price;
                     Timer.Create(0.02F, true, (t =>
                     {
                         // Déplacement du produit dans le panier final
                         m_currentProduct.Location += new Vector2(-5, 0);
-                        if (m_currentProduct.Location.X < 100)
+                        if (m_currentProduct.Location.X < -100)
                         {
                             t.Stop();
-                            m_isAnimatingScanner = false;
                             m_basket.AddItem(m_currentProduct);
-                            m_clientList.First().Items.Dequeue();
+                            m_currentClient.Items.Dequeue();
                             m_currentProduct = null;
                             m_scanTime = 0;
                         }
@@ -316,10 +387,11 @@ namespace Super_Caissiere.States
             }
         }
 
+
         private void displayRank(float _time)
         {
             int d = 0;
-            int off=0;
+            int off = 0;
 
             if (_time < 500)
             {
@@ -327,32 +399,33 @@ namespace Super_Caissiere.States
             }
             else if (_time < 1000)
             {
-                off=1;
+                off = 1;
                 d = 5;
             }
             else if (_time < 2000)
             {
-                off=2;
+                off = 2;
                 d = 0;
             }
             else if (_time < 3000)
             {
-                off=3;
+                off = 3;
                 d = -5;
             }
             else if (_time < 5000)
             {
-                off=4;
+                off = 4;
                 d = -10;
             }
             else
             {
-                off=5;
+                off = 5;
                 d = -20;
             }
             m_hp += d;
+            m_hp = (m_hp > 100) ? 100 : m_hp;
             m_rankActive = true;
-            m_rank.Y = 150*off; 
+            m_rank.Y = 150 * off;
             Timer.Create(2, true, (t =>
             {
                 m_rankActive = false;
@@ -370,17 +443,16 @@ namespace Super_Caissiere.States
                 spriteBatch.Draw(Application.MagicContentManager.GetTexture("ingamebg"), SceneCamera.VisibilityRectangle, Color.White);
 
                 // les clients
-                foreach (Client cli in m_clientList.ToList())
-                {
-                    cli.Draw(spriteBatch);
-                }
+                if (m_currentClient != null)
+                    m_currentClient.Draw(spriteBatch);
 
                 // La caisse
                 m_cashier.Draw(spriteBatch);
 
-                foreach (Client cli in m_clientList.ToList())
+
+                if (m_currentClient != null)
                 {
-                    var list = cli.Items.ToList();
+                    var list = m_currentClient.Items.ToList();
                     for (int i = list.Count; i > 0; i--)
                     {
                         list[i - 1].Draw(spriteBatch);
@@ -388,7 +460,7 @@ namespace Super_Caissiere.States
                 }
 
                 // Le panier
-                m_basket.Draw(spriteBatch);
+
 
                 //draw models3D
                 if (m_currentProduct != null)
@@ -407,10 +479,7 @@ namespace Super_Caissiere.States
 
                 // La main en dernier
                 m_hand.Draw(spriteBatch);
-                if (m_scannerZone != Rectangle.Empty)
-                {
-                    spriteBatch.DrawRectangle(m_scannerZone, Color.Red * m_scannerColor);
-                }
+
                 //panier.Draw(spriteBatch);
 
                 Color color = Color.White;
@@ -447,6 +516,17 @@ namespace Super_Caissiere.States
             }
 
             spriteBatch.DrawString(Application.MagicContentManager.Font, m_time.ToString(), new Vector2(10, 10), Color.Chartreuse);
+            string s = "Magasin profit: ";
+            if (m_magasinCA > 1000000)
+            {
+                s += (m_magasinCA/1000000).ToString("0.00") + "ME";
+            }
+            else
+            {
+                s += m_magasinCA.ToString("0.00") + "E";
+            }
+            spriteBatch.DrawString(Application.MagicContentManager.Font,  s, new Vector2(10, 30), Color.Red);
+            spriteBatch.DrawString(Application.MagicContentManager.Font, "Votre profit: " + m_youCA.ToString("0.00") + "E", new Vector2(10, 50), Color.Fuchsia);
             if (m_textbox != null) m_textbox.Draw(spriteBatch);
             spriteBatch.End();
 
