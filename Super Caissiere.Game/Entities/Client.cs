@@ -10,15 +10,13 @@ using Super_Caissiere.Entities.Items;
 
 namespace Super_Caissiere.Entities
 {
-
-   
-
-
     public class Client : Entity
     {
         //TODO Add text here
         public static string[] CLIENT_EVENT = {   "Bonjour,\n quel mauvais temps aujourd'hui!" ,
-                                                  "Je vien acheté des kubor\n pour avoir un bo fécier !"
+                                                  "Je vien acheté des kubor\n pour avoir un bo fécier !",
+                                                  "Regardé, gé acheté Canard Pécé",
+                                                  "...",
                                               };
 
 

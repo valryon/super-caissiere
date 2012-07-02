@@ -100,6 +100,11 @@ namespace Super_Caissiere.States
                 // Mise à jour du temps
                 float delta = 3;
                 delta = 1; // DEBUG
+
+                if (m_pauseMidi)
+                {
+                    delta = 5;
+                }
                 m_time = m_time.AddMinutes(gameTime.ElapsedGameTime.TotalSeconds * delta);
 
                 if (m_scanning) m_timerScan += gameTime.ElapsedGameTime.Milliseconds;
