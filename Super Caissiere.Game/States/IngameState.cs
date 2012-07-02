@@ -17,6 +17,7 @@ namespace Super_Caissiere.States
 {
     [TextureContent(AssetName = "ingamebg", AssetPath = "gfxs/ingame/background", LoadOnStartup = true)]
     [TextureContent(AssetName = "boss", AssetPath = "gfxs/sprites/boss", LoadOnStartup = true)]
+    [TextureContent(AssetName = "rank", AssetPath = "gfxs/ingame/rank", LoadOnStartup = true)]
     [TextureContent(AssetName = "ingamebgpause", AssetPath = "gfxs/ingame/background_pause", LoadOnStartup = true)]
     public class IngameState : GameState
     {
@@ -42,6 +43,9 @@ namespace Super_Caissiere.States
 
         private bool m_scanning = false;
         private float m_timerScan;
+
+        private Rectangle m_rank;
+        private bool m_rankActive = false;
 
         private bool m_ending;
         private int m_hp;
@@ -72,12 +76,18 @@ namespace Super_Caissiere.States
             m_bossZone = new Rectangle(Application.Graphics.GraphicsDevice.Viewport.Width - 80, 30, 80, 120);
             SceneCamera.FadeOut(40, null, Color.Chocolate);
             m_barCodeQte = new BarCodeQTE();
+            m_rank = new Rectangle(0, 0, 300, 150);
         }
 
         public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
         {
-            if (m_textbox == null)
+            if (m_textbox == null || !m_textbox.IsModal)
             {
+                if (m_textbox != null)
+                {
+                    
+
+                }
                 // Mise à jour du temps
                 float delta = 3;
                 delta = 1; // DEBUG
@@ -103,7 +113,7 @@ namespace Super_Caissiere.States
                     // Ajouter un client s'il n'y en a plus
                     if (m_clientList.FirstOrDefault() == null)
                     {
-                        m_clientList.Enqueue(new Client(new Vector2(500, 170), new Vector2(500, 450)));
+                        m_clientList.Enqueue(new Client(new Vector2(500, 50), new Vector2(500, 450)));
                     }
 
                     foreach (Client cli in m_clientList.ToList())
@@ -219,64 +229,44 @@ namespace Super_Caissiere.States
                 if (key.ThumbStickLeft.X < 0) m_render.rotateY(-0.05f); //left
                 if (key.ThumbStickLeft.X > 0) m_render.rotateY(0.05f);  //right
             }
-            if (m_textbox == null)
+            if (m_textbox == null && m_scanning)
                 if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed) m_hp--;
 
             // Possible uniquement si on ne fait rien d'autre
-            if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed && !m_render.isActive)
+            if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsDown )
             {
-                // Pas de produit devant le joueur : on en met un
                 if (m_currentProduct == null)
                 {
-                    m_clientProductsAnimationComplete = false;
-
                     var firstClient = m_clientList.FirstOrDefault();
-
                     if (firstClient != null)
                     {
-                        m_currentProduct = firstClient.Items.FirstOrDefault();
-
-                        if (m_currentProduct != null)
+                        foreach (Product p in firstClient.Items)
                         {
-                            Timer.Create(0.02F, true, (t =>
+                            p.Location+=new Vector2(-2,0);
+                            if (p.Location.X < 450)
                             {
-                                m_currentProduct.Location += new Vector2(-5, 0);
-                                if (m_currentProduct.Location.X < 300)
+                                m_currentProduct = p;
+                                Timer.Create(0.02F, true, (t =>
                                 {
-                                    t.Stop();
-                                    m_render.setModel(m_currentProduct.getModel(), m_currentProduct.getCollider());
-                                    m_render.isActive = true;
-                                    m_manualMode = false;
-                                    m_scanTime = 0;
-                                    m_scanning = true;
-                                    m_timerScan = 0;
-                                }
-                            }));
+                                    m_currentProduct.Location += new Vector2(-5, 0);
+                                    if (m_currentProduct.Location.X < 300)
+                                    {
+                                        t.Stop();
+                                        m_render.setModel(m_currentProduct.getModel(), m_currentProduct.getCollider());
+                                        m_render.isActive = true;
+                                        m_manualMode = false;
+                                        m_scanTime = 0;
+                                        m_scanning = true;
+                                        m_timerScan = 0;
+                                    }
+                                }));
+
+                            }
                         }
                     }
                 }
-                else
-                {
-                    // On décale les produits qui sont sur le tapis
-                    if (m_clientProductsAnimationComplete == false)
-                    {
-                        Timer.Create(0.02F, true, (t =>
-                        {
-                            foreach (Product item in m_clientList.First().Items)
-                            {
-                                if (item != m_currentProduct)
-                                {
-                                    item.Location += new Vector2(-5, 0);
-                                    if (item.Location.X < 450)
-                                    {
-                                        t.Stop();
-                                        m_clientProductsAnimationComplete = true;
-                                    }
-                                }
-                            }
-                        }));
-                    }
-                }
+                
+               
             }
 
             // Clic sur la souris = SCAN
@@ -291,7 +281,7 @@ namespace Super_Caissiere.States
                         m_scanTime++;
                         if (m_scanTime > 10)
                         {
-                            m_textbox = new TextBox("Astus:\n Ce code bare semble être corrompu, presser \n'Ctrl' pour commuté au mode manuel");
+                            m_textbox = new TextBox("Astus:\n Ce code bare semble être corrompu, presser \n'Ctrl' pour commuté au mode manuel", true);
                         }
                         if (!m_currentProduct.IsCorrupted) validate = true;
                     }
@@ -329,31 +319,44 @@ namespace Super_Caissiere.States
         private void displayRank(float _time)
         {
             int d = 0;
+            int off=0;
+
             if (_time < 500)
             {
                 d = 10;
             }
             else if (_time < 1000)
             {
+                off=1;
                 d = 5;
             }
             else if (_time < 2000)
             {
+                off=2;
                 d = 0;
             }
             else if (_time < 3000)
             {
+                off=3;
                 d = -5;
             }
             else if (_time < 5000)
             {
+                off=4;
                 d = -10;
             }
             else
             {
+                off=5;
                 d = -20;
             }
             m_hp += d;
+            m_rankActive = true;
+            m_rank.Y = 150*off; 
+            Timer.Create(2, true, (t =>
+            {
+                m_rankActive = false;
+            }));
 
         }
 
@@ -431,6 +434,10 @@ namespace Super_Caissiere.States
                 spriteBatch.Draw(Application.MagicContentManager.GetTexture("boss"), m_bossZone, r, Color.White);
                 int size = (int)((m_hp / 100f) * 120f);
                 spriteBatch.DrawRectangle(new Rectangle(Application.Graphics.GraphicsDevice.Viewport.Width - 100, 150 - size, 10, size), color);
+                if (m_rankActive)
+                {
+                    spriteBatch.Draw(Application.MagicContentManager.GetTexture("rank"), new Rectangle((Application.Graphics.GraphicsDevice.Viewport.Width - 300) / 2, (Application.Graphics.GraphicsDevice.Viewport.Height - 150) / 2, 300, 150), m_rank, Color.White);
+                }
 
             }
             // Pause du midi

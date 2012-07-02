@@ -34,7 +34,7 @@ namespace Super_Caissiere.Entities
             if (randomNumberFromGod % 2 == 1) IsWoman = true;
 
             body = new ClientBody(this);
-            head = new ClientHead(this);
+            head = new ClientHead(this, Application.Random.GetRandomInt(0,2));
 
             // Produits du client
             m_items = new Queue<Product>();
@@ -91,7 +91,7 @@ namespace Super_Caissiere.Entities
         private Client client;
 
         public ClientBody(Client c)
-            : base("corps", Vector2.Zero, new Rectangle(c.IsWoman ? 128 : 0, 0, 128, c.IsWoman ? 256 : 220), Vector2.One)
+            : base("corps", Vector2.Zero, new Rectangle(c.IsWoman ? 128 : 0, 0, 128, c.IsWoman ? 256 : 220), Vector2.One*2)
         {
             client = c;
             updateLocation();
@@ -106,7 +106,7 @@ namespace Super_Caissiere.Entities
 
         private void updateLocation()
         {
-            Location = client.Location + new Vector2(0, 128);
+            Location = client.Location + new Vector2(0, 155);
         }
 
         public override Entity Clone()
@@ -119,10 +119,11 @@ namespace Super_Caissiere.Entities
     public class ClientHead : Entity
     {
         private Client client;
-
-        public ClientHead(Client c)
-            : base("tetes", Vector2.Zero, new Rectangle(c.IsWoman ? 256 : 0, 0, 128, 128), Vector2.One)
+        private int type;
+        public ClientHead(Client c, int t)
+            : base("tetes", Vector2.Zero, new Rectangle(c.IsWoman ? 80 : 0, 80*t, 80, 80), Vector2.One*2)
         {
+            type = t;
             client = c;
             updateLocation();
         }
@@ -134,12 +135,12 @@ namespace Super_Caissiere.Entities
 
         private void updateLocation()
         {
-            Location = client.Location;
+            Location = client.Location + new Vector2(25,0);
         }
 
         public override Entity Clone()
         {
-            return new ClientHead(client);
+            return new ClientHead(client, type);
         }
     }
 

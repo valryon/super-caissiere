@@ -27,16 +27,27 @@ namespace SuperCaissiere.Engine.UI
         private Vector2 m_skip_size;
         private int m_anim = 0;
         private double m_time = 0;
+        public bool IsModal{get; set;}
+        private int m_times = 0;
 
-        public TextBox(string _text)
+        public TextBox(string _text, bool _modal)
         {
             m_text = _text;
             m_srcRect = new Rectangle(0, 0, 16, 16);
             m_size = Application.MagicContentManager.Font.MeasureString(m_text);
-
+            IsModal = _modal;
             m_location = new Vector2(Resolution.VirtualWidth / 2 - m_size.X / 2, Resolution.VirtualHeight / 2 - m_size.Y / 2);
             m_skip = "Espace: fermer";
             m_skip_size = Application.MagicContentManager.Font.MeasureString(m_skip);
+        }
+
+        /**
+         * True when the timer is finish
+         **/
+
+        public bool isDone()
+        {
+            return (!IsModal) && (m_times > 6); //3Seconds
         }
 
         public void Update(GameTime gametime)
@@ -45,6 +56,7 @@ namespace SuperCaissiere.Engine.UI
             if (m_time > 500)
             {
                 m_time = 0;
+                m_times++;
                 m_anim = (m_anim == 0) ? 1 : 0;
             }
 
