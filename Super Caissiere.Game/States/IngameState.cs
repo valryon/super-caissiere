@@ -12,10 +12,11 @@ using SuperCaissiere.Engine.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using SuperCaissiere.Engine.Content;
 using SuperCaissiere.Engine.UI;
+using Super_Caissiere.Music;
 
 namespace Super_Caissiere.States
 {
-
+       [SongContent(AssetName = "bgm1", AssetPath = "musics/bgm", Artist = "nope", Name = "nope")]
     [TextureContent(AssetName = "textbox", AssetPath = "gfxs/ingame/textbox", LoadOnStartup = true)]
     [TextureContent(AssetName = "ingamebg", AssetPath = "gfxs/ingame/background", LoadOnStartup = true)]
     [TextureContent(AssetName = "boss", AssetPath = "gfxs/sprites/boss", LoadOnStartup = true)]
@@ -53,6 +54,8 @@ namespace Super_Caissiere.States
         private int m_hp;
         private bool m_pauseMidi, m_pauseMidiAnimation;
 
+        private MusicPlayer m_player;
+
         private float m_price = 0;
         protected override void LoadContent()
         {
@@ -78,10 +81,14 @@ namespace Super_Caissiere.States
             SceneCamera.FadeOut(40, null, Color.Chocolate);
             m_barCodeQte = new BarCodeQTE();
             m_rank = new Rectangle(0, 0, 300, 150);
+            m_player = new MusicPlayer();
+            MusicPlayer.PlayGameMusic();
 
+            
             Timer.Create(1f, true, (t =>
             {
                 m_magasinCA += Application.Random.GetRandomFloat(10, 50);
+
             }));
         }
 
