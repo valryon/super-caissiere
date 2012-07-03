@@ -73,6 +73,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\Items\Cereales.cs" />
+    <Compile Include="Entities\Items\Chili.cs" />
+    <Compile Include="Entities\Items\Cassoulet.cs" />
+    <Compile Include="Entities\Items\Burger.cs" />
+    <Compile Include="Entities\Items\Lessive.cs" />
+    <Compile Include="Entities\Items\Pinard.cs" />
     <Compile Include="QTEs\BarCodeQTE.cs" />
     <Compile Include="Entities\Cashier.cs" />
     <Compile Include="Entities\Client.cs" />

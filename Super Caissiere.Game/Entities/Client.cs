@@ -17,6 +17,7 @@ namespace Super_Caissiere.Entities
                                                   "Je vien acheté des kubor\n pour avoir un bo fécier !",
                                                   "Regardé, gé acheté Canard Pécé",
                                                   "...",
+                                                  "Je sé meme pas ce que je fais la!" //faut la laiser à la fin cettephrase
                                               };
 
 
@@ -32,7 +33,7 @@ namespace Super_Caissiere.Entities
             if (randomNumberFromGod % 2 == 1) IsWoman = true;
 
             body = new ClientBody(this);
-            head = new ClientHead(this, Application.Random.GetRandomInt(0,2));
+            head = new ClientHead(this, Application.Random.GetRandomInt(0,3));
 
             // Produits du client
             m_items = new Queue<Product>();
@@ -44,7 +45,7 @@ namespace Super_Caissiere.Entities
                 item.Location = location_produit+delta;
                 item.Location += new Vector2(Application.Random.GetRandomInt(-10, 10), Application.Random.GetRandomInt(-10, 10));
                 m_items.Enqueue(item);
-                delta += new Vector2(90, 0);
+                delta += new Vector2(item.DstRect.Width, 0);
             }
 
         }
@@ -59,7 +60,12 @@ namespace Super_Caissiere.Entities
 
         public string getSentence()
         {
-            return CLIENT_EVENT[Application.Random.GetRandomInt(CLIENT_EVENT.Length)];
+            string s;
+            if(head.getType()==3)
+                s=CLIENT_EVENT[CLIENT_EVENT.Length-1]; 
+            else
+                s=  CLIENT_EVENT[Application.Random.GetRandomInt(CLIENT_EVENT.Length)-1];
+            return s;
         }
 
 
@@ -135,6 +141,10 @@ namespace Super_Caissiere.Entities
         {
             updateLocation();
             base.Update(gameTime);
+        }
+        public int getType()
+        {
+            return type;
         }
 
         private void updateLocation()

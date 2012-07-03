@@ -16,7 +16,7 @@ using Super_Caissiere.Music;
 
 namespace Super_Caissiere.States
 {
-       [SongContent(AssetName = "bgm1", AssetPath = "musics/bgm", Artist = "nope", Name = "nope")]
+    [SongContent(AssetName = "bgm1", AssetPath = "musics/bgm", Artist = "nope", Name = "nope")]
     [TextureContent(AssetName = "textbox", AssetPath = "gfxs/ingame/textbox", LoadOnStartup = true)]
     [TextureContent(AssetName = "ingamebg", AssetPath = "gfxs/ingame/background", LoadOnStartup = true)]
     [TextureContent(AssetName = "boss", AssetPath = "gfxs/sprites/boss", LoadOnStartup = true)]
@@ -36,6 +36,8 @@ namespace Super_Caissiere.States
         private BarCodeQTE m_barCodeQte;
         private int m_scanTime;
         private TextBox m_textbox;
+
+        private bool m_shaker = false;
 
         private int m_diagFSM;
 
@@ -308,11 +310,16 @@ namespace Super_Caissiere.States
                     m_hp -= 5;
                     SceneCamera.ShakeFactor = Vector2.One * 5;
                     SceneCamera.ShakeSpeed = Vector2.One * 2;
-                    Timer.Create(0.5f, false, (t =>
+                    if (!m_shaker)
                     {
-                        SceneCamera.ShakeFactor = Vector2.Zero;
-                        SceneCamera.ShakeSpeed = Vector2.Zero;
-                    }));
+                        m_shaker = true;
+                        Timer.Create(0.5f, false, (t =>
+                        {
+                            SceneCamera.ShakeFactor = Vector2.Zero;
+                            SceneCamera.ShakeSpeed = Vector2.Zero;
+                            
+                        }));
+                    }
                 }
 
 
