@@ -373,15 +373,16 @@ namespace Super_Caissiere.States
 
             }
             //brulage de retine des clients
-            if (m_textbox == null && m_currentClient!=null)
+            if (m_textbox == null && m_currentClient != null)
             {
                 var mouse = Application.InputManager.GetDevice<MouseDevice>(SuperCaissiere.Engine.Input.LogicalPlayerIndex.One);
                 if (mouse.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed)
                 {
-                    blinkScan();
-                    
-                    if(m_currentClient.whereIsMyMind().Intersects(new Rectangle((int)mouse.MouseLocation.X, (int)mouse.MouseLocation.Y, 1,1))){
-                        m_textbox= new TextBox("ARGH ! MES ZYEU ! ! !\n ME MANIFIK ZIEUX ! ! !",false);
+
+                    if (m_currentClient.whereIsMyMind().Intersects(new Rectangle((int)mouse.MouseLocation.X, (int)mouse.MouseLocation.Y, 1, 1)))
+                    {
+                        blinkScan();
+                        m_textbox = new TextBox("ARGH ! MES ZYEU ! ! !\n ME MANIFIK ZIEUX ! ! !", false);
                         shakeShakeShake();
                         m_hp -= 5;
                     }
@@ -395,7 +396,7 @@ namespace Super_Caissiere.States
                 bool validate = false;
                 if (mouse.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed)
                 {
-                    blinkScan();
+                    //blinkScan();
                     if (m_render.isClicked((int)mouse.MouseLocation.X, (int)mouse.MouseLocation.Y))
                     {
                         m_scanTime++;
