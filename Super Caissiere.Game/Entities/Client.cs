@@ -29,7 +29,10 @@ namespace Super_Caissiere.Entities
                                                   "La didacture Cubaine est un sujet d'actualité très préoccupant",
                                                   "La France elle va gagner !",
                                                   "J'aime mon pays, moi !",
+                                                  "Plu viteuh !\n je vé raté le début du Bigdil !",
+                                                  "Oh non ! Jé oublié lé rutabaga !",
                                                   "Je sé meme pas ce que je fais la!" //faut la laiser à la fin cette phrase
+
                                               };
 
 
@@ -45,7 +48,7 @@ namespace Super_Caissiere.Entities
             if (randomNumberFromGod % 2 == 1) IsWoman = true;
 
             body = new ClientBody(this);
-            head = new ClientHead(this, Application.Random.GetRandomInt(0, 3));
+            head = new ClientHead(this, Application.Random.GetRandomInt(0, (IsWoman)?2:4));
 
             // Produits du client
             m_items = new Queue<Product>();
@@ -61,6 +64,12 @@ namespace Super_Caissiere.Entities
             }
 
         }
+
+        public Rectangle whereIsMyMind()
+        {
+            return head.DstRect;
+        }
+
 
         public override void Update(GameTime gameTime)
         {
@@ -161,7 +170,7 @@ namespace Super_Caissiere.Entities
 
         private void updateLocation()
         {
-            Location = client.Location + new Vector2(25, 0);
+            Location = client.Location + new Vector2(40, 0);
         }
 
         public override Entity Clone()

@@ -64,7 +64,6 @@ namespace Super_Caissiere.States
         private int m_hp;
         private bool m_pauseMidi, m_pauseMidiAnimation;
 
-        private MusicPlayer m_player;
 
         private float m_price;
         protected override void LoadContent()
@@ -265,7 +264,7 @@ namespace Super_Caissiere.States
             // Appui sur espace : ACTION
             var key = Application.InputManager.GetDevice<KeyboardDevice>(SuperCaissiere.Engine.Input.LogicalPlayerIndex.One);
 
-            if (m_scanning && !m_barCodeQte.isActive() && key.GetState(SuperCaissiere.Engine.Input.MappingButtons.B).IsPressed)
+            if (m_scanning && !m_barCodeQte.isActive() && (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.B).IsPressed || key.GetState(SuperCaissiere.Engine.Input.MappingButtons.X).IsPressed))
             {
                 m_manualMode = true;
                 m_barCodeQte.start();
@@ -333,19 +332,7 @@ namespace Super_Caissiere.States
                 {
                     m_hp -= 5;
 
-                    if (!m_shaker)
-                    {
-                        SceneCamera.ShakeFactor = Vector2.One * 5;
-                        SceneCamera.ShakeSpeed = Vector2.One * 2;
-                        m_shaker = true;
-                        Timer.Create(0.5f, false, (t =>
-                        {
-                            SceneCamera.ShakeFactor = Vector2.Zero;
-                            SceneCamera.ShakeSpeed = Vector2.Zero;
-                            SceneCamera.Reset();
-                            m_shaker = false;
-                        }));
-                    }
+                    shakeShakeShake();
                 }
 
 
@@ -385,7 +372,22 @@ namespace Super_Caissiere.States
 
 
             }
+            //brulage de retine des clients
+            if (m_textbox == null && m_currentClient!=null)
+            {
+                var mouse = Application.InputManager.GetDevice<MouseDevice>(SuperCaissiere.Engine.Input.LogicalPlayerIndex.One);
+                if (mouse.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed)
+                {
+                    blinkScan();
+                    
+                    if(m_currentClient.whereIsMyMind().Intersects(new Rectangle((int)mouse.MouseLocation.X, (int)mouse.MouseLocation.Y, 1,1))){
+                        m_textbox= new TextBox("ARGH ! MES ZYEU ! ! !\n ME MANIFIK ZIEUX ! ! !",false);
+                        shakeShakeShake();
+                        m_hp -= 5;
+                    }
+                }
 
+            }
             // Clic sur la souris = SCAN
             if (m_scanning)
             {
@@ -393,6 +395,7 @@ namespace Super_Caissiere.States
                 bool validate = false;
                 if (mouse.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed)
                 {
+                    blinkScan();
                     if (m_render.isClicked((int)mouse.MouseLocation.X, (int)mouse.MouseLocation.Y))
                     {
                         m_scanTime++;
@@ -433,32 +436,58 @@ namespace Super_Caissiere.States
             }
         }
 
+        private void blinkScan()
+        {
+            SceneCamera.FadeIn(2, () =>
+            {
+                m_pauseMidi = false;
+                SceneCamera.FadeOut(2, null, Color.Red * 0.3f);
+            }, Color.Red * 0.3f);
+        }
+
+        private void shakeShakeShake()
+        {
+            if (!m_shaker)
+            {
+                SceneCamera.ShakeFactor = Vector2.One * 5;
+                SceneCamera.ShakeSpeed = Vector2.One * 2;
+                m_shaker = true;
+                Timer.Create(0.5f, false, (t =>
+                {
+                    SceneCamera.ShakeFactor = Vector2.Zero;
+                    SceneCamera.ShakeSpeed = Vector2.Zero;
+                    SceneCamera.Reset();
+                    m_shaker = false;
+                }));
+            }
+        }
+
 
         private void displayRank(float _time)
         {
             int d = 0;
             int off = 0;
 
-            if (_time < 500)
+            if (_time < 1000)
             {
                 d = 10;
             }
-            else if (_time < 1000)
+            else if (_time < 1700)
             {
                 off = 1;
                 d = 5;
             }
-            else if (_time < 2000)
+            else if (_time < 3000)
             {
                 off = 2;
                 d = 0;
             }
-            else if (_time < 3000)
+            else if (_time < 4000)
             {
                 off = 3;
                 d = -5;
             }
-            else if (_time < 5000)
+            else if (_time < 6000)
             {
                 off = 4;
                 d = -10;
@@ -466,13 +495,13 @@ namespace Super_Caissiere.States
             else
             {
                 off = 5;
-                d = -20;
+                d = -15;
             }
             m_hp += d;
             m_hp = (m_hp > 100) ? 100 : m_hp;
             m_rankActive = true;
             m_rank.Y = 150 * off;
-            Timer.Create(2, true, (t =>
+            Timer.Create(2, false, (t =>
             {
                 m_rankActive = false;
             }));

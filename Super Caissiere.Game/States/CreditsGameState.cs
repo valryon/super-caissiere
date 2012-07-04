@@ -47,12 +47,12 @@ namespace Super_Caissiere.States
             spriteBatch.Begin(SceneCamera);
 
             spriteBatch.Draw(Application.MagicContentManager.GetTexture("creditsbg"), SceneCamera.VisibilityRectangle, Color.White);
-
+            spriteBatch.DrawRectangle(new Rectangle(100, 150, 450, 250), Color.GreenYellow);
             spriteBatch.DrawString(Application.MagicContentManager.Font, "RESPONSABLES", new Vector2(100, 150), Color.Red);
-            spriteBatch.DrawString(Application.MagicContentManager.Font, "Lapinou Fou - programmateur informatique", new Vector2(100, 200), Color.LightSteelBlue);
-            spriteBatch.DrawString(Application.MagicContentManager.Font, "Valryon - programmateur informatique", new Vector2(100, 240), Color.DarkSalmon);
-            spriteBatch.DrawString(Application.MagicContentManager.Font, "Yaki_ - jeu concepteur et programmateur informatique", new Vector2(100, 280), Color.DarkGoldenrod);
-            spriteBatch.DrawString(Application.MagicContentManager.Font, "Lolyan - dessinateuse", new Vector2(100, 320), Color.Pink);
+            spriteBatch.DrawString(Application.MagicContentManager.Font, "Monsieur_Lapinou - programmateur informatik", new Vector2(100, 200), Color.LightSteelBlue);
+            spriteBatch.DrawString(Application.MagicContentManager.Font, "Valryon - programmateur informatik", new Vector2(100, 240), Color.DarkSalmon);
+            spriteBatch.DrawString(Application.MagicContentManager.Font, "Yaki_ - jeu concepteur et programmateur informatik et acteur studio", new Vector2(100, 280), Color.DarkGoldenrod);
+            spriteBatch.DrawString(Application.MagicContentManager.Font, "Lolyan - dessinateuse", new Vector2(100, 320), Color.PapayaWhip);
             spriteBatch.DrawString(Application.MagicContentManager.Font, "Glory - idée de commencement", new Vector2(100, 360), Color.Brown);
             spriteBatch.End();
         }

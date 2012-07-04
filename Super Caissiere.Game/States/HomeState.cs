@@ -22,7 +22,7 @@ namespace Super_Caissiere.States
     [SoundEffectContent(AssetName = "titre", AssetPath = "sfxs/titre-2", LoadOnStartup = true)]
     public class HomeState : GameState
     {
-        private static MusicPlayer playerMusic;
+   
 
         private Vector2 m_titleLoc, m_sub1Loc, m_sub2Loc;
         private Rectangle m_titleDst, m_sub1Dst, m_sub2Dst, m_caddieDst;
