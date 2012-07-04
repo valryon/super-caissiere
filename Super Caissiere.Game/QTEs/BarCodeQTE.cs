@@ -86,7 +86,6 @@ namespace SuperCaissiere.Engine.Core
 
         public void start()
         {
-            Console.WriteLine("START QTE");
             generateBarCode();
             isValidated = false;
             changeStateTo(STATE.ACTIVE);

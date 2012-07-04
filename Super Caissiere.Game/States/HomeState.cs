@@ -8,16 +8,22 @@ using Microsoft.Xna.Framework;
 using Super_Caissiere.SpecialEffects;
 using SuperCaissiere.Engine.Utils;
 using SuperCaissiere.Engine.Input.Devices;
+using Super_Caissiere.Audio;
 
 namespace Super_Caissiere.States
 {
+    [SoundEffectContent(AssetName = "bip1", AssetPath = "sfxs/bip", LoadOnStartup = true)]
+    [SoundEffectContent(AssetName = "bip2", AssetPath = "sfxs/bip-2", LoadOnStartup = true)]
     [TextureContent(AssetName = "caddie", AssetPath = "gfxs/menu/caddie", LoadOnStartup = true)]
     [TextureContent(AssetName = "menu", AssetPath = "gfxs/menu/menu", LoadOnStartup = true)]
     [TextureContent(AssetName = "title", AssetPath = "gfxs/menu/title", LoadOnStartup = true)]
     [TextureContent(AssetName = "subtitle1", AssetPath = "gfxs/menu/subtitle1", LoadOnStartup = true)]
     [TextureContent(AssetName = "subtitle2", AssetPath = "gfxs/menu/subtitle2", LoadOnStartup = true)]
+    [SoundEffectContent(AssetName = "titre", AssetPath = "sfxs/titre-2", LoadOnStartup = true)]
     public class HomeState : GameState
     {
+        private static MusicPlayer playerMusic;
+
         private Vector2 m_titleLoc, m_sub1Loc, m_sub2Loc;
         private Rectangle m_titleDst, m_sub1Dst, m_sub2Dst, m_caddieDst;
         private Vector2 m_caddieLoc;
@@ -51,6 +57,8 @@ namespace Super_Caissiere.States
             {
                 SceneCamera.FadeOut(20, () =>
                 {
+                    Application.MagicContentManager.GetSound("titre").Play();
+
                     Interpolator.Create(-200, 40, 0.4f, (i) =>
                     {
                         m_titleLoc.Y = i.Value;
@@ -67,6 +75,8 @@ namespace Super_Caissiere.States
                             }, (i3) =>
                             {
                                 m_isAnimationCompleted = true;
+
+                                MusicPlayer.PlayHomeMusic();
                             });
                         });
                     });
@@ -91,6 +101,8 @@ namespace Super_Caissiere.States
                 var key = Application.InputManager.GetDevice<KeyboardDevice>(SuperCaissiere.Engine.Input.LogicalPlayerIndex.One);
                 if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed)
                 {
+                    Application.MagicContentManager.GetSound("bip1", "bip2").Play();
+
                     switch (m_selectedOption)
                     {
                         case 0:
@@ -119,12 +131,13 @@ namespace Super_Caissiere.States
 
                 if (key.ThumbStickLeft.Y < 0)
                 {
+                    Application.MagicContentManager.GetSound("bip1", "bip2").Play();
                     m_selectedOption--;
                     disableInputFOrAWhile();
-
                 }
                 else if (key.ThumbStickLeft.Y > 0)
                 {
+                    Application.MagicContentManager.GetSound("bip1", "bip2").Play();
                     m_selectedOption++;
                     disableInputFOrAWhile();
                 }
@@ -160,6 +173,12 @@ namespace Super_Caissiere.States
                 spriteBatch.DrawString(Application.MagicContentManager.Font, "Jeu nouveau", new Vector2(70, 300), (m_selectedOption == 0 ? Color.Chartreuse : Color.Blue));
                 spriteBatch.DrawString(Application.MagicContentManager.Font, "Responsables", new Vector2(70, 330), (m_selectedOption == 1 ? Color.Chartreuse : Color.Blue));
                 spriteBatch.DrawString(Application.MagicContentManager.Font, "Partir", new Vector2(70, 360), (m_selectedOption == 2 ? Color.Chartreuse : Color.Blue));
+
+
+                spriteBatch.DrawString(Application.MagicContentManager.Font, "Contrôleurs", new Vector2(380, 300), Color.Yellow);
+                spriteBatch.DrawString(Application.MagicContentManager.Font, "ESPACE : Actionner", new Vector2(380, 320), Color.Black);
+                spriteBatch.DrawString(Application.MagicContentManager.Font, "CTRL : Mode manuel", new Vector2(380, 340), Color.Black);
+                spriteBatch.DrawString(Application.MagicContentManager.Font, "PAVE NUM CHIFFRE : Saisie en mode manuel", new Vector2(380, 360), Color.Black);
             }
 
             spriteBatch.End();

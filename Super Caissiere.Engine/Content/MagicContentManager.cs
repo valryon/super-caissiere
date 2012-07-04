@@ -205,7 +205,7 @@ namespace SuperCaissiere.Engine.Content
             else if (item is Model3DContentItem)
             {
                 var modelItem = item as Model3DContentItem;
-                modelItem.Model3D = _contentManager.Load<Model>(@item.AssetPath);
+                 modelItem.Model3D = _contentManager.Load<Model>(@item.AssetPath);
             }
             else
             {
@@ -263,6 +263,24 @@ namespace SuperCaissiere.Engine.Content
 
             throw new ArgumentException(id + " is not a soundeffect content item ?!");
         }
+
+        /// <summary>
+        /// Retrieve a sound from one of the given ID, choosen randonly
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public SoundEffect GetSound(params String[] ids)
+        {
+            String id = ids.ToList().GetRandomElement<String>();
+
+            var item = GetContent(id);
+
+            if (item is SoundEffectContentItem)
+                return ((SoundEffectContentItem)item).SoundEffect;
+
+            throw new ArgumentException(id + " is not a soundeffect content item ?!");
+        }
+
         public Model3DContentItem GetModel(String id)
         {
             var item = GetContent(id);

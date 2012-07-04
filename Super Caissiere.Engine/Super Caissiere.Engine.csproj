@@ -119,7 +119,6 @@
     <Compile Include="Input\JoystickReader.cs" />
     <Compile Include="Input\LogicalPlayerIndex.cs" />
     <Compile Include="Input\Rumble.cs" />
-    <Compile Include="MusicPlayer.cs" />
     <Compile Include="Particules\Particule.cs" />
     <Compile Include="Particules\ParticuleManager.cs" />
     <Compile Include="Physics\Floor.cs" />

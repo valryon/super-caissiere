@@ -30,7 +30,6 @@ namespace SuperCaissiere.Engine.UI
         private double m_time = 0;
         public bool IsModal{get; set;}
         private int m_times = 0;
-        private Texture2D text;
 
         public TextBox(string _text, bool _modal)
         {

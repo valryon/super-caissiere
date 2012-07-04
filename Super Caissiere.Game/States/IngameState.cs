@@ -1,18 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System;
 using Microsoft.Xna.Framework;
+using Super_Caissiere.Audio;
 using Super_Caissiere.Entities;
-using SuperCaissiere.Engine.Core;
 using Super_Caissiere.Entities.Items;
-using Microsoft.Xna.Framework.Input;
-using SuperCaissiere.Engine.Input.Devices;
-using SuperCaissiere.Engine.Utils;
-using SuperCaissiere.Engine.Graphics;
-using Microsoft.Xna.Framework.Graphics;
 using SuperCaissiere.Engine.Content;
+using SuperCaissiere.Engine.Core;
+using SuperCaissiere.Engine.Graphics;
+using SuperCaissiere.Engine.Input.Devices;
 using SuperCaissiere.Engine.UI;
-using Super_Caissiere.Music;
+using SuperCaissiere.Engine.Utils;
 
 namespace Super_Caissiere.States
 {
@@ -22,9 +19,20 @@ namespace Super_Caissiere.States
     [TextureContent(AssetName = "boss", AssetPath = "gfxs/sprites/boss", LoadOnStartup = true)]
     [TextureContent(AssetName = "rank", AssetPath = "gfxs/ingame/rank", LoadOnStartup = true)]
     [TextureContent(AssetName = "ingamebgpause", AssetPath = "gfxs/ingame/background_pause", LoadOnStartup = true)]
+
+
+    [SoundEffectContent(AssetName = "bonjour1", AssetPath = "sfxs/bonjour", LoadOnStartup = true)]
+    [SoundEffectContent(AssetName = "bonjour2", AssetPath = "sfxs/bonjour-2", LoadOnStartup = true)]
+    [SoundEffectContent(AssetName = "bonjour3", AssetPath = "sfxs/bonjour-3", LoadOnStartup = true)]
+    [SoundEffectContent(AssetName = "bonne-journee", AssetPath = "sfxs/bonne-journee", LoadOnStartup = true)]
+    [SoundEffectContent(AssetName = "aurevoir1", AssetPath = "sfxs/au-revoir", LoadOnStartup = true)]
+    [SoundEffectContent(AssetName = "aurevoir2", AssetPath = "sfxs/bonne-journee-au-revoir", LoadOnStartup = true)]
+    [SoundEffectContent(AssetName = "aurevoir3", AssetPath = "sfxs/bjar2", LoadOnStartup = true)]
+    [SoundEffectContent(AssetName = "fidelite1", AssetPath = "sfxs/fidelite", LoadOnStartup = true)]
+    [SoundEffectContent(AssetName = "fidelite2", AssetPath = "sfxs/fidelite-2", LoadOnStartup = true)]
+    [SoundEffectContent(AssetName = "fidelite3", AssetPath = "sfxs/fidelite-3", LoadOnStartup = true)]
     public class IngameState : GameState
     {
-
         private Cashier m_cashier;
         private Hand m_hand;
         private DateTime m_time;
@@ -37,12 +45,12 @@ namespace Super_Caissiere.States
         private int m_scanTime;
         private TextBox m_textbox;
 
-        private bool m_shaker ;
+        private bool m_shaker;
 
         private int m_diagFSM;
 
         private float m_magasinCA;
-        private float m_youCA ;
+        private float m_youCA;
 
         private bool m_manualMode;
 
@@ -91,10 +99,9 @@ namespace Super_Caissiere.States
             SceneCamera.FadeOut(40, null, Color.Chocolate);
             m_barCodeQte = new BarCodeQTE();
             m_rank = new Rectangle(0, 0, 300, 150);
-            m_player = new MusicPlayer();
+
             MusicPlayer.PlayGameMusic();
-            
-            
+
             Timer.Create(1f, true, (t =>
             {
                 m_magasinCA += Application.Random.GetRandomFloat(10, 50);
@@ -156,6 +163,7 @@ namespace Super_Caissiere.States
                                     t.Stop();
                                     m_textbox = new TextBox(m_currentClient.getSentence(), false);
 
+                                    Application.MagicContentManager.GetSound("bonjour1", "bonjour2", "bonjour3").Play();
                                 }
 
                             }));
@@ -278,9 +286,17 @@ namespace Super_Caissiere.States
                                     if (m_currentClient.Location.X < 100) t.Stop();
                                 }));
                                 break;
-                            case 1: m_textbox = new TextBox("Vous avez la carte du magazin?", true); break;
-                            case 2: m_textbox = new TextBox("Ayez une bonne journée", true); break;
-                            case 3: m_textbox = new TextBox("Au revoir et a bientot", true); break;
+                            case 1:
+                                Application.MagicContentManager.GetSound("fidelite1", "fidelite2", "fidelite3").Play();
+                                m_textbox = new TextBox("Vous avez la carte du magazin?", true);
+                                break;
+                            case 2:
+                                Application.MagicContentManager.GetSound("bonne-journee", "aurevoir1", "aurevoir2", "aurevoir3").Play();
+                                m_textbox = new TextBox("Ayez une bonne journée", true);
+                                break;
+                            case 3:
+                                m_textbox = new TextBox("Au revoir et a bientot", true);
+                                break;
                         }
                         m_diagFSM++;
                     }
@@ -312,7 +328,7 @@ namespace Super_Caissiere.States
             }
 
 
-            if (m_textbox == null && m_scanning) //Mallus
+            if (m_textbox == null && m_scanning) //Malus
                 if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed)
                 {
                     m_hp -= 5;
@@ -394,7 +410,8 @@ namespace Super_Caissiere.States
 
                 if (validate)
                 {
-                    Console.Beep();
+                    Application.MagicContentManager.GetSound("bip1", "bip2").Play();
+
                     m_scanning = false;
                     displayRank(m_timerScan);
                     m_price += m_currentProduct.Price;
@@ -548,13 +565,13 @@ namespace Super_Caissiere.States
             string s = "Magasin profit: ";
             if (m_magasinCA > 1000000)
             {
-                s += (m_magasinCA/1000000).ToString("0.00") + "ME";
+                s += (m_magasinCA / 1000000).ToString("0.00") + "ME";
             }
             else
             {
                 s += m_magasinCA.ToString("0.00") + "E";
             }
-            spriteBatch.DrawString(Application.MagicContentManager.Font,  s, new Vector2(10, 30), Color.Red);
+            spriteBatch.DrawString(Application.MagicContentManager.Font, s, new Vector2(10, 30), Color.Red);
             spriteBatch.DrawString(Application.MagicContentManager.Font, "Votre profit: " + m_youCA.ToString("0.00") + "E", new Vector2(10, 50), Color.Fuchsia);
             if (m_textbox != null) m_textbox.Draw(spriteBatch);
             spriteBatch.End();
