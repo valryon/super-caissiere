@@ -1665,7 +1665,7 @@ Objects:  {
 		}
 		UseMipMap: 0
 		Filename: "TEXTUREmetalboxBURGER.png"
-		RelativeFilename: "D:\Users\Thibault_2\Dropbox\Decidatron3000\3DModel\metalbox\TEXTUREmetalboxBURGER.png"
+		RelativeFilename: ".\TEXTUREmetalboxBURGER.png"
 	}
 	Texture: "Texture::TEXTUREmetalboxCHILI_png", "TextureVideoClip" {
 		Type: "TextureVideoClip"
@@ -1690,7 +1690,7 @@ Objects:  {
 		}
 		Media: "Video::TEXTUREmetalboxCHILI_png"
 		FileName: "TEXTUREmetalboxBURGER.png"
-		RelativeFilename: "D:\Users\Thibault_2\Dropbox\Decidatron3000\3DModel\metalbox\TEXTUREmetalboxBURGER.png"
+		RelativeFilename: ".\TEXTUREmetalboxBURGER.png"
 		ModelUVTranslation: 0,0
 		ModelUVScaling: 1,1
 		Texture_Alpha_Source: "None"

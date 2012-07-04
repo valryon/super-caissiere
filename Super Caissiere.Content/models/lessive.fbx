@@ -1576,7 +1576,7 @@ Objects:  {
 		}
 		UseMipMap: 0
 		Filename: "TEXTURElessive.png"
-		RelativeFilename: "D:\Users\Thibault_2\Dropbox\Decidatron3000\3DModel\cereals\TEXTURElessive.png"
+		RelativeFilename: ".\TEXTURElessive.png"
 	}
 	Texture: "Texture::TEXTUREcereals_png", "TextureVideoClip" {
 		Type: "TextureVideoClip"
@@ -1601,7 +1601,7 @@ Objects:  {
 		}
 		Media: "Video::TEXTUREcereals_png"
 		FileName: "TEXTURElessive.png"
-		RelativeFilename: "D:\Users\Thibault_2\Dropbox\Decidatron3000\3DModel\cereals\TEXTURElessive.png"
+		RelativeFilename: ".\TEXTURElessive.png"
 		ModelUVTranslation: 0,0
 		ModelUVScaling: 1,1
 		Texture_Alpha_Source: "None"

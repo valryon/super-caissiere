@@ -1665,7 +1665,7 @@ Objects:  {
 		}
 		UseMipMap: 0
 		Filename: "TEXTUREmetalboxCASSOULET_col.png"
-		RelativeFilename: "D:\Users\Thibault_2\Dropbox\Decidatron3000\3DModel\metalbox\TEXTUREmetalboxCASSOULET_col.png"
+		RelativeFilename: ".\TEXTUREmetalboxCASSOULET_col.png"
 	}
 	Texture: "Texture::TEXTUREmetalboxCHILI_png", "TextureVideoClip" {
 		Type: "TextureVideoClip"
@@ -1690,7 +1690,7 @@ Objects:  {
 		}
 		Media: "Video::TEXTUREmetalboxCHILI_png"
 		FileName: "TEXTUREmetalboxCASSOULET_col.png"
-		RelativeFilename: "D:\Users\Thibault_2\Dropbox\Decidatron3000\3DModel\metalbox\TEXTUREmetalboxCASSOULET_col.png"
+		RelativeFilename: ".\TEXTUREmetalboxCASSOULET_col.png"
 		ModelUVTranslation: 0,0
 		ModelUVScaling: 1,1
 		Texture_Alpha_Source: "None"

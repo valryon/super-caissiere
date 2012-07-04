@@ -37,20 +37,20 @@ namespace Super_Caissiere.States
         private int m_scanTime;
         private TextBox m_textbox;
 
-        private bool m_shaker = false;
+        private bool m_shaker ;
 
         private int m_diagFSM;
 
-        private float m_magasinCA = 0;
-        private float m_youCA = 0;
+        private float m_magasinCA;
+        private float m_youCA ;
 
-        private bool m_manualMode = false;
+        private bool m_manualMode;
 
-        private bool m_scanning = false;
+        private bool m_scanning;
         private float m_timerScan;
 
         private Rectangle m_rank;
-        private bool m_rankActive = false;
+        private bool m_rankActive;
 
         private bool m_ending;
         private int m_hp;
@@ -58,7 +58,7 @@ namespace Super_Caissiere.States
 
         private MusicPlayer m_player;
 
-        private float m_price = 0;
+        private float m_price;
         protected override void LoadContent()
         {
         }
@@ -66,7 +66,15 @@ namespace Super_Caissiere.States
         protected override void InternalLoad()
         {
             m_hp = 100;
-
+            m_currentClient = null;
+            m_currentProduct = null;
+            m_rankActive = false;
+            m_shaker = false;
+            m_scanning = false;
+            m_manualMode = false;
+            m_magasinCA = 0;
+            m_youCA = 0;
+            m_price = 0;
             m_cashier = new Cashier();
             m_hand = new Hand();
             m_basket = new ClientBasket();
@@ -85,7 +93,7 @@ namespace Super_Caissiere.States
             m_rank = new Rectangle(0, 0, 300, 150);
             m_player = new MusicPlayer();
             MusicPlayer.PlayGameMusic();
-
+            
             
             Timer.Create(1f, true, (t =>
             {
@@ -308,16 +316,18 @@ namespace Super_Caissiere.States
                 if (key.GetState(SuperCaissiere.Engine.Input.MappingButtons.A).IsPressed)
                 {
                     m_hp -= 5;
-                    SceneCamera.ShakeFactor = Vector2.One * 5;
-                    SceneCamera.ShakeSpeed = Vector2.One * 2;
+
                     if (!m_shaker)
                     {
+                        SceneCamera.ShakeFactor = Vector2.One * 5;
+                        SceneCamera.ShakeSpeed = Vector2.One * 2;
                         m_shaker = true;
                         Timer.Create(0.5f, false, (t =>
                         {
                             SceneCamera.ShakeFactor = Vector2.Zero;
                             SceneCamera.ShakeSpeed = Vector2.Zero;
-                            
+                            SceneCamera.Reset();
+                            m_shaker = false;
                         }));
                     }
                 }
