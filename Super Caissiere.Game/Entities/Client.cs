@@ -12,12 +12,24 @@ namespace Super_Caissiere.Entities
 {
     public class Client : Entity
     {
-        //TODO Add text here
         public static string[] CLIENT_EVENT = {   "Bonjour,\n quel mauvais temps aujourd'hui!" ,
                                                   "Je vien acheté des kubor\n pour avoir un bo fécier !",
                                                   "Regardé, gé acheté Canard Pécé",
                                                   "...",
-                                                  "Je sé meme pas ce que je fais la!" //faut la laiser à la fin cettephrase
+                                                  "Tu veu bien etre mon ami?",
+                                                  "On a beau temps hein",
+                                                  "The Great Paper Adventure c mieu ke colof",
+                                                  "Ma vi est une movèze simulation, o secour",
+                                                  "Je suis pressé alor dépéché vou",
+                                                  "Super la promotion sur le pinar héhé",
+                                                  "Il fo arété de joué mintenan, vo zieu sègne",
+                                                  "Taaaa ta taaaa ta ta ta tintintintin (thème de Fort Boyard)",
+                                                  "Vien boar un pti cou a la mézon !",
+                                                  "Ma vi est une movèze simulation, o secour",
+                                                  "La didacture Cubaine est un sujet d'actualité très préoccupant",
+                                                  "La France elle va gagner !",
+                                                  "J'aime mon pays, moi !",
+                                                  "Je sé meme pas ce que je fais la!" //faut la laiser à la fin cette phrase
                                               };
 
 

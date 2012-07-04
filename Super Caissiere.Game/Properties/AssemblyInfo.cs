@@ -1,15 +1,16 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Resources;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Super Caissiere")]
-[assembly: AssemblyProduct("Super Caissiere")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2012")]
+[assembly: AssemblyTitle("Monique Passion Hôtesse de Caisse")]
+[assembly: AssemblyProduct("Monique Passion Hôtesse de Caisse")]
+[assembly: AssemblyDescription("Canard PC Horreur Bundle 2012")]
+[assembly: AssemblyCompany("The Great Paper Team")]
+[assembly: AssemblyCopyright("Copyright © The Great Paper Team 2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,3 +33,4 @@ using System.Runtime.InteropServices;
 //      Revision
 //
 [assembly: AssemblyVersion("1.0.0.0")]
+[assembly: NeutralResourcesLanguageAttribute("fr")]

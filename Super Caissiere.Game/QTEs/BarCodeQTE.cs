@@ -130,25 +130,27 @@ namespace SuperCaissiere.Engine.Core
             kb = Keyboard.GetState();
             Keys[] keys = kb.GetPressedKeys();
             if (keys.Length == 0) return;
-            if (keys.Length > 1)
-            {
-                currentIdx = 0;
-                return;
-            }
 
             int n = -1;
-            switch (keys[0])
+
+            foreach (Keys key in keys.ToList())
             {
-                case Keys.NumPad0: if (lastkb.IsKeyUp(Keys.NumPad0)) n = 0; break;
-                case Keys.NumPad1: if (lastkb.IsKeyUp(Keys.NumPad1)) n = 1; break;
-                case Keys.NumPad2: if (lastkb.IsKeyUp(Keys.NumPad2)) n = 2; break;
-                case Keys.NumPad3: if (lastkb.IsKeyUp(Keys.NumPad3)) n = 3; break;
-                case Keys.NumPad4: if (lastkb.IsKeyUp(Keys.NumPad4)) n = 4; break;
-                case Keys.NumPad5: if (lastkb.IsKeyUp(Keys.NumPad5)) n = 5; break;
-                case Keys.NumPad6: if (lastkb.IsKeyUp(Keys.NumPad6)) n = 6; break;
-                case Keys.NumPad7: if (lastkb.IsKeyUp(Keys.NumPad7)) n = 7; break;
-                case Keys.NumPad8: if (lastkb.IsKeyUp(Keys.NumPad8)) n = 8; break;
-                case Keys.NumPad9: if (lastkb.IsKeyUp(Keys.NumPad9)) n = 9; break;
+                if (key != Keys.None)
+                {
+                    switch (key)
+                    {
+                        case Keys.NumPad0: if (lastkb.IsKeyUp(Keys.NumPad0)) n = 0; break;
+                        case Keys.NumPad1: if (lastkb.IsKeyUp(Keys.NumPad1)) n = 1; break;
+                        case Keys.NumPad2: if (lastkb.IsKeyUp(Keys.NumPad2)) n = 2; break;
+                        case Keys.NumPad3: if (lastkb.IsKeyUp(Keys.NumPad3)) n = 3; break;
+                        case Keys.NumPad4: if (lastkb.IsKeyUp(Keys.NumPad4)) n = 4; break;
+                        case Keys.NumPad5: if (lastkb.IsKeyUp(Keys.NumPad5)) n = 5; break;
+                        case Keys.NumPad6: if (lastkb.IsKeyUp(Keys.NumPad6)) n = 6; break;
+                        case Keys.NumPad7: if (lastkb.IsKeyUp(Keys.NumPad7)) n = 7; break;
+                        case Keys.NumPad8: if (lastkb.IsKeyUp(Keys.NumPad8)) n = 8; break;
+                        case Keys.NumPad9: if (lastkb.IsKeyUp(Keys.NumPad9)) n = 9; break;
+                    }
+                }
             }
             if (n == -1) return;
             if (n == barcodeDigits[currentIdx])

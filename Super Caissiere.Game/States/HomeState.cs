@@ -177,7 +177,7 @@ namespace Super_Caissiere.States
 
                 spriteBatch.DrawString(Application.MagicContentManager.Font, "Contrôleurs", new Vector2(380, 300), Color.Yellow);
                 spriteBatch.DrawString(Application.MagicContentManager.Font, "ESPACE : Actionner", new Vector2(380, 320), Color.Black);
-                spriteBatch.DrawString(Application.MagicContentManager.Font, "CTRL : Mode manuel", new Vector2(380, 340), Color.Black);
+                spriteBatch.DrawString(Application.MagicContentManager.Font, "CTRL GAUCHER: Mode manuel", new Vector2(380, 340), Color.Black);
                 spriteBatch.DrawString(Application.MagicContentManager.Font, "PAVE NUM CHIFFRE : Saisie en mode manuel", new Vector2(380, 360), Color.Black);
             }
 

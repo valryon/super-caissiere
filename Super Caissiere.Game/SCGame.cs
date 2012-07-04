@@ -38,7 +38,6 @@ namespace Super_Caissiere
             KeyboardDevice keyboard = new KeyboardDevice(SuperCaissiere.Engine.Input.LogicalPlayerIndex.One);
             keyboard.MapButton(Microsoft.Xna.Framework.Input.Keys.Space, SuperCaissiere.Engine.Input.MappingButtons.A);
             keyboard.MapButton(Microsoft.Xna.Framework.Input.Keys.LeftControl, SuperCaissiere.Engine.Input.MappingButtons.B);
-            keyboard.MapButton(Microsoft.Xna.Framework.Input.Keys.RightControl, SuperCaissiere.Engine.Input.MappingButtons.B);
             keyboard.MapLeftThumbstick(Microsoft.Xna.Framework.Input.Keys.Up, Microsoft.Xna.Framework.Input.Keys.Down, Microsoft.Xna.Framework.Input.Keys.Left, Microsoft.Xna.Framework.Input.Keys.Right);
 
             Application.InputManager.RegisterDevice(keyboard);
