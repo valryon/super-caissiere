@@ -5,6 +5,12 @@
 
 **[Télécharger le jeu](https://team-monique.itch.io/monique-passion-htesse-de-caisse)**
 
+## Dépendances
+
+- XNA 4.0
+
+## Description
+
 Notre participation au concours Make Something Horrible (juillet 2012) de Canard PC.
 
 Scannez-les tous ! 
